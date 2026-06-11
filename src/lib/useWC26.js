@@ -11,6 +11,7 @@ export function useWC26(user) {
   const [leaderboard, setLeaderboard] = useState([])
   const [locks, setLocks]           = useState({}) // { md_1: true, md_2: false, ... }
   const [loading, setLoading]       = useState(true)
+  const [allPreds, setAllPreds]      = useState({}) // { username: { matchId: {h,a,adv} } }
   const channelRef = useRef(null)
 
   const parseResult = (row) => ({ h: row.home_score, a: row.away_score, adv: row.advance ?? undefined })
@@ -50,6 +51,7 @@ export function useWC26(user) {
       byUser[r.username][r.match_id] = parsePred(r)
     })
     if (user && !byUser[user]) byUser[user] = {}
+    setAllPreds(byUser)
     const rows = Object.entries(byUser).map(([name, preds]) => ({
       name, ...computeTotals(allMatches, preds, currentResults || {}),
     }))
@@ -120,5 +122,5 @@ export function useWC26(user) {
     await loadLeaderboard(res)
   }, [loadResults, loadLeaderboard])
 
-  return { results, myPreds, leaderboard, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard }
+  return { results, myPreds, leaderboard, allPreds, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard }
 }

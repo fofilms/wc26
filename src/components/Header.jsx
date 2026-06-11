@@ -4,6 +4,7 @@ const TABS = [
   { id: 'predict', label: 'Predictions' },
   { id: 'standings', label: 'Standings' },
   { id: 'leaderboard', label: 'Leaderboard' },
+  { id: 'after', label: 'After' },
 ]
 
 export default function Header({ user, isAdmin, activeTab, onTab, onLogout }) {

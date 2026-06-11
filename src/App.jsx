@@ -6,6 +6,7 @@ import Predict from './pages/Predict'
 import Standings from './pages/Standings'
 import Leaderboard from './pages/Leaderboard'
 import Results from './pages/Results'
+import After from './pages/After'
 import Users from './pages/Users'
 import { useWC26 } from './lib/useWC26'
 import { ADMINS, HIDDEN_USERS } from './lib/constants'
@@ -21,7 +22,7 @@ export default function App() {
 
   const isAdmin = ADMINS.includes(user?.toLowerCase())
 
-  const { results, myPreds, leaderboard, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, allPreds, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
 
   const handleSavePred = useCallback(async (...args) => {
     await savePred(...args)

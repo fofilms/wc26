@@ -1,0 +1,122 @@
+.wrap { padding-bottom: 40px; }
+
+.intro { padding: 12px 2px 8px; }
+.intro h2 { font-size: 14px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+.intro p  { color: var(--muted); font-size: 10.5px; margin-top: 1px; }
+
+.seg {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+  margin-bottom: 10px;
+}
+.seg button {
+  flex: 1; background: transparent; border: none;
+  color: var(--muted); font-family: inherit; font-weight: 600;
+  font-size: 11px; padding: 6px; border-radius: 6px; cursor: pointer; transition: .12s;
+}
+.seg button.active { background: var(--ink); color: #fff; }
+
+.chips { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  font-family: inherit; font-weight: 600; font-size: 10px;
+  padding: 4px 10px; border-radius: 999px; cursor: pointer; transition: .12s; white-space: nowrap;
+}
+.chip:hover { color: var(--ink); }
+.chipActive { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.empty { color: var(--muted); font-size: 11px; padding: 30px 0; text-align: center; }
+
+/* Two column layout */
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+@media (max-width: 580px) {
+  .cols { grid-template-columns: 1fr; }
+}
+
+/* Left: match list */
+.matchList { display: flex; flex-direction: column; gap: 4px; }
+
+.matchItem {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.matchItem:hover { border-color: rgba(0,0,0,.2); }
+.matchSelected { border-color: var(--ink) !important; background: rgba(0,0,0,.03); }
+
+.matchDate {
+  font-size: 8.5px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px;
+}
+.matchTeams {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6px; font-size: 11px; font-weight: 600; color: var(--ink);
+}
+.matchScore {
+  font-size: 13px; font-weight: 800; color: var(--ink);
+  background: var(--bg); padding: 1px 7px; border-radius: 5px;
+  border: 1px solid var(--border); white-space: nowrap;
+}
+
+/* Right: predictions panel */
+.predsPanel {
+  position: sticky;
+  top: 80px;
+}
+
+.panelEmpty {
+  color: var(--muted); font-size: 11px;
+  padding: 40px 16px; text-align: center;
+  background: var(--card); border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 11px; font-weight: 700; color: var(--ink);
+  padding: 9px 12px;
+  background: rgba(0,0,0,.02);
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.panelResult {
+  font-size: 9.5px; font-weight: 600; color: var(--muted);
+}
+
+.predList { padding: 4px 0; }
+
+.predRow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; font-size: 10.5px;
+  border-bottom: 1px solid var(--border);
+}
+.predRow:last-child { border-bottom: none; }
+.predMe { background: rgba(0,0,0,.025); }
+
+.predUser { flex: 1; font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.predScore { font-weight: 700; color: var(--ink); font-size: 11px; white-space: nowrap; }
+.predPts {
+  font-size: 9.5px; font-weight: 800;
+  padding: 1px 6px; border-radius: 4px;
+  white-space: nowrap; flex: none;
+}
+.pts0 { background: rgba(0,0,0,.05); color: var(--muted); }
+.pts1 { background: rgba(232,160,32,.15); color: var(--amber-2); }
+.pts2 { background: rgba(26,158,92,.14); color: var(--good); }
