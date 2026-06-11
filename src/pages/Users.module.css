@@ -17,6 +17,18 @@
 
 .actions { display: flex; gap: 4px; flex: none; }
 
+.count {
+  font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px;
+  background: rgba(0,0,0,.05); color: var(--muted);
+}
+.countFull {
+  font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px;
+  background: rgba(26,158,92,.15); color: var(--good);
+  border: 1px solid rgba(26,158,92,.3);
+}
+
 .lockTag {
   font-size: 8.5px; font-weight: 700; color: var(--bad);
   background: rgba(217,64,64,.08); border: 1px solid rgba(217,64,64,.2);

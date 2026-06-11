@@ -126,6 +126,7 @@ export default function Users({ currentUser, userLocks, onToggleUserLock }) {
                   <div className={u.userInfo}>
                     <span className={u.uname}>{usr.username}</span>
                     {isLocked && <span className={u.lockTag}>🔒 locked</span>}
+                    {(() => { const c = predCounts[usr.username] || 0; if (!c) return null; return <span className={c >= 24 ? u.countFull : u.count}>{c}/24</span> })()}
                     {canSeePasswords && (
                       <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
                     )}
