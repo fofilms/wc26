@@ -7,7 +7,9 @@ const TABS = [
 ]
 
 export default function Header({ user, isAdmin, activeTab, onTab, onLogout }) {
-  const tabs = isAdmin ? [...TABS, { id: 'results', label: 'Enter Results' }] : TABS
+  const tabs = isAdmin
+    ? [...TABS, { id: 'results', label: 'Enter Results' }, { id: 'users', label: 'Users' }]
+    : TABS
 
   return (
     <header className={s.header}>

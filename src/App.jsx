@@ -6,6 +6,7 @@ import Predict from './pages/Predict'
 import Standings from './pages/Standings'
 import Leaderboard from './pages/Leaderboard'
 import Results from './pages/Results'
+import Users from './pages/Users'
 import { useWC26 } from './lib/useWC26'
 import { ADMINS, HIDDEN_USERS } from './lib/constants'
 
@@ -19,7 +20,6 @@ export default function App() {
   const [toast, setToast] = useState(null)
 
   const isAdmin = ADMINS.includes(user?.toLowerCase())
-  const isHidden = HIDDEN_USERS.includes(user?.toLowerCase())
 
   const { results, myPreds, leaderboard, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
 
@@ -55,7 +55,6 @@ export default function App() {
     </div>
   )
 
-  // filter hidden users from leaderboard
   const visibleLeaderboard = leaderboard.filter(u => !HIDDEN_USERS.includes(u.name.toLowerCase()))
 
   const pageProps = {
@@ -72,7 +71,8 @@ export default function App() {
         {tab === 'predict'     && <Predict {...pageProps} />}
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
-        {tab === 'results' && isAdmin && <Results {...pageProps} />}
+        {tab === 'results'  && isAdmin && <Results {...pageProps} />}
+        {tab === 'users'    && isAdmin && <Users currentUser={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
         Predictions are private · Leaderboard is public · Times in Berlin CEST

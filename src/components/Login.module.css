@@ -8,14 +8,15 @@
   padding: 32px 20px;
 }
 
-.logo {
-  width: 220px;
-  margin-bottom: 48px;
-}
-.logo img {
-  width: 100%;
-  height: auto;
-  display: block;
+.logo { width: 220px; margin-bottom: 40px; }
+.logo img { width: 100%; height: auto; display: block; }
+
+.nameTag {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  opacity: 0.6;
 }
 
 .inputWrap {
@@ -27,7 +28,6 @@
   width: 100%;
   max-width: 320px;
 }
-
 .inputWrap input {
   flex: 1;
   background: transparent;
@@ -39,12 +39,7 @@
   color: #000;
   padding: 15px 16px;
 }
-
-.inputWrap input::placeholder {
-  color: #999;
-  font-weight: 400;
-}
-
+.inputWrap input::placeholder { color: #999; font-weight: 400; }
 .inputWrap button {
   background: transparent;
   border: none;
@@ -60,10 +55,34 @@
 .inputWrap button:hover { background: #f5f5f5; }
 .inputWrap button:disabled { opacity: .4; cursor: not-allowed; }
 
+.hint {
+  color: rgba(255,255,255,.45);
+  font-size: 10.5px;
+  margin-top: 10px;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
 .err {
   color: #ff5d5d;
   font-size: 11px;
-  margin-top: 12px;
+  margin-top: 10px;
   font-weight: 600;
   text-align: center;
 }
+
+.back {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.35);
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  margin-top: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 5px;
+  transition: color .15s;
+}
+.back:hover { color: rgba(255,255,255,.7); }

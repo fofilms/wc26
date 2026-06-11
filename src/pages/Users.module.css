@@ -1,0 +1,96 @@
+.list { display: flex; flex-direction: column; gap: 4px; }
+
+.row {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.userInfo { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.uname { font-weight: 700; font-size: 12px; color: var(--ink); }
+.upw { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+
+.editBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .12s;
+  white-space: nowrap;
+}
+.editBtn:hover { border-color: var(--ink); color: var(--ink); }
+
+.editBlock { width: 100%; display: flex; flex-direction: column; gap: 7px; }
+
+.editRow { display: flex; align-items: center; gap: 8px; }
+.editRow label { font-size: 10px; font-weight: 600; color: var(--muted); width: 70px; flex: none; }
+.editRow input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  outline: none;
+}
+.editRow input:focus { border-color: var(--ink); }
+
+.editActions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.saveBtn {
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.renameBtn {
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.cancelBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toast {
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 7px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
