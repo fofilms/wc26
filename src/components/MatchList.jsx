@@ -1,9 +1,101 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MatchRow from './MatchRow'
 import { fmtDate } from '../lib/dates'
 import { STAGE_NAMES_FULL, KO_ORDER, MD_LABELS } from '../lib/constants'
 import fixtures from '../data/fixtures.json'
 import s from './MatchList.module.css'
+
+// Deadlines in UTC:
+// MD1: Jun 10 2026 23:59 UTC (fixed)
+// MD2: Jun 18 2026 first match is 12:00 ET = 16:00 UTC → deadline 15:00 UTC (1hr before)
+// MD3: Jun 24 2026 first match is 15:00 ET = 19:00 UTC → deadline 18:00 UTC (1hr before)
+const DEADLINES = {
+  1: new Date('2026-06-10T23:59:00Z'),
+  2: new Date('2026-06-18T15:00:00Z'),
+  3: new Date('2026-06-24T18:00:00Z'),
+}
+
+function useCountdown(deadline) {
+  const [remaining, setRemaining] = useState(null)
+  useEffect(() => {
+    const tick = () => {
+      const diff = deadline - Date.now()
+      setRemaining(diff)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [deadline])
+  return remaining
+}
+
+function DeadlineBanner({ matchday, isAdmin, locks, onToggleLock }) {
+  const lockKey = `md_${matchday}`
+  const locked = locks?.[lockKey] ?? false
+  const deadline = DEADLINES[matchday]
+  const remaining = useCountdown(deadline)
+
+  // Auto-lock when deadline passes (only trigger once)
+  useEffect(() => {
+    if (remaining !== null && remaining <= 0 && !locked && !isAdmin) {
+      // deadline passed — UI treats as locked even without admin action
+    }
+  }, [remaining, locked, isAdmin])
+
+  const deadlinePassed = remaining !== null && remaining <= 0
+  const autoLocked = deadlinePassed && !locked // deadline passed but admin hasn't manually locked
+
+  const formatCountdown = (ms) => {
+    if (ms <= 0) return null
+    const totalSec = Math.floor(ms / 1000)
+    const days = Math.floor(totalSec / 86400)
+    const hrs = Math.floor((totalSec % 86400) / 3600)
+    const mins = Math.floor((totalSec % 3600) / 60)
+    const secs = totalSec % 60
+    if (days > 0) return `${days}d ${hrs}h ${mins}m`
+    return `${hrs}h ${mins}m ${secs}s`
+  }
+
+  const effectiveLocked = locked || deadlinePassed
+
+  return (
+    <div className={`${s.deadlineBanner} ${effectiveLocked ? s.deadlineLocked : ''}`}>
+      <div className={s.deadlineLeft}>
+        {effectiveLocked ? (
+          <span>🔒 {deadlinePassed && !locked ? 'Deadline passed — predictions closed' : 'Predictions locked'}</span>
+        ) : (
+          <>
+            <span>⏱ Deadline: {remaining !== null && formatCountdown(remaining)}</span>
+            {matchday === 1 && <span className={s.deadlineDate}>Jun 10, 2026 · 23:59 UTC</span>}
+            {matchday === 2 && <span className={s.deadlineDate}>Jun 18 · 1hr before first kick-off</span>}
+            {matchday === 3 && <span className={s.deadlineDate}>Jun 24 · 1hr before first kick-off</span>}
+          </>
+        )}
+      </div>
+      {isAdmin && (
+        <button className={s.lockBtn} onClick={() => onToggleLock(lockKey)}>
+          {locked ? 'Unlock' : 'Lock'}
+        </button>
+      )}
+    </div>
+  )
+}
+
+function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
+  const lockKey = `ko_${stage}`
+  const locked = locks?.[lockKey] ?? false
+  if (!isAdmin && !locked) return null
+  return (
+    <div className={`${s.deadlineBanner} ${locked ? s.deadlineLocked : ''}`}>
+      <span>{locked ? '🔒 Predictions locked' : '🔓 Predictions open'}</span>
+      {isAdmin && (
+        <button className={s.lockBtn} onClick={() => onToggleLock(lockKey)}>
+          {locked ? 'Unlock' : 'Lock'}
+        </button>
+      )}
+    </div>
+  )
+}
 
 export default function MatchList({ mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
   const [view, setView] = useState('group')
@@ -26,11 +118,14 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, onSa
               </button>
             ))}
           </div>
-          <GroupMatches
-            matchday={md} mode={mode} results={results} myPreds={myPreds}
-            isAdmin={isAdmin} locks={locks}
-            onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
-          />
+          {mode === 'predict' && (
+            <DeadlineBanner matchday={md} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
+          )}
+          {mode === 'result' && isAdmin && (
+            <DeadlineBanner matchday={md} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
+          )}
+          <GroupMatches matchday={md} mode={mode} results={results} myPreds={myPreds}
+            isAdmin={isAdmin} locks={locks} onSavePred={onSavePred} onSaveResult={onSaveResult} />
         </>
       ) : (
         <>
@@ -41,88 +136,60 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, onSa
               </button>
             ))}
           </div>
-          <KoMatches
-            stage={ko} mode={mode} results={results} myPreds={myPreds}
-            isAdmin={isAdmin} locks={locks}
-            onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
-          />
+          <KoLockBar stage={ko} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
+          <KoMatches stage={ko} mode={mode} results={results} myPreds={myPreds}
+            isAdmin={isAdmin} locks={locks} onSavePred={onSavePred} onSaveResult={onSaveResult} />
         </>
       )}
     </div>
   )
 }
 
-function LockBar({ lockKey, isAdmin, locks, onToggleLock }) {
-  const locked = locks?.[lockKey] ?? false
-  if (!isAdmin && !locked) return null
-  return (
-    <div className={`${s.lockBar} ${locked ? s.lockBarLocked : ''}`}>
-      <span>{locked ? '🔒 Predictions locked' : '🔓 Predictions open'}</span>
-      {isAdmin && (
-        <button className={s.lockBtn} onClick={() => onToggleLock(lockKey)}>
-          {locked ? 'Unlock' : 'Lock'}
-        </button>
-      )}
-    </div>
-  )
-}
-
-function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
+function isEffectiveLocked(matchday, locks) {
   const lockKey = `md_${matchday}`
-  const locked = locks?.[lockKey] ?? false
-  const ms = fixtures.groupMatches.filter(m => m.matchday === matchday)
-
-  const byDay = {}
-  ms.forEach(m => { if (!byDay[m.date]) byDay[m.date] = []; byDay[m.date].push(m) })
-
-  return (
-    <>
-      <LockBar lockKey={lockKey} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
-      {Object.entries(byDay).map(([date, matches]) => (
-        <div key={date}>
-          <div className={s.dayDiv}>{fmtDate(date)}</div>
-          <div className={s.grid}>
-            {matches.map(m => (
-              <MatchRow
-                key={m.id} match={m} mode={mode} isAdmin={isAdmin}
-                locked={mode === 'predict' ? locked : false}
-                pred={myPreds[m.id]} result={results[m.id]}
-                onSavePred={onSavePred} onSaveResult={onSaveResult}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </>
-  )
+  const manualLocked = locks?.[lockKey] ?? false
+  const deadline = DEADLINES[matchday]
+  const deadlinePassed = deadline && Date.now() > deadline.getTime()
+  return manualLocked || deadlinePassed
 }
 
-function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
-  const lockKey = `ko_${stage}`
-  const locked = locks?.[lockKey] ?? false
-  const ms = fixtures.knockout.filter(m => m.stage === stage)
-
+function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult }) {
+  const locked = mode === 'predict' ? isEffectiveLocked(matchday, locks) : false
+  const ms = fixtures.groupMatches.filter(m => m.matchday === matchday)
   const byDay = {}
   ms.forEach(m => { if (!byDay[m.date]) byDay[m.date] = []; byDay[m.date].push(m) })
 
-  return (
-    <>
-      <LockBar lockKey={lockKey} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
-      {Object.entries(byDay).map(([date, matches]) => (
-        <div key={date}>
-          <div className={s.dayDiv}>{fmtDate(date)}</div>
-          <div className={s.grid}>
-            {matches.map(m => (
-              <MatchRow
-                key={m.id} match={m} mode={mode} isAdmin={isAdmin}
-                locked={mode === 'predict' ? locked : false}
-                pred={myPreds[m.id]} result={results[m.id]}
-                onSavePred={onSavePred} onSaveResult={onSaveResult}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </>
-  )
+  return Object.entries(byDay).map(([date, matches]) => (
+    <div key={date}>
+      <div className={s.dayDiv}>{fmtDate(date)}</div>
+      <div className={s.grid}>
+        {matches.map(m => (
+          <MatchRow key={m.id} match={m} mode={mode} isAdmin={isAdmin} locked={locked}
+            pred={myPreds[m.id]} result={results[m.id]}
+            onSavePred={onSavePred} onSaveResult={onSaveResult} />
+        ))}
+      </div>
+    </div>
+  ))
+}
+
+function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult }) {
+  const lockKey = `ko_${stage}`
+  const locked = mode === 'predict' ? (locks?.[lockKey] ?? false) : false
+  const ms = fixtures.knockout.filter(m => m.stage === stage)
+  const byDay = {}
+  ms.forEach(m => { if (!byDay[m.date]) byDay[m.date] = []; byDay[m.date].push(m) })
+
+  return Object.entries(byDay).map(([date, matches]) => (
+    <div key={date}>
+      <div className={s.dayDiv}>{fmtDate(date)}</div>
+      <div className={s.grid}>
+        {matches.map(m => (
+          <MatchRow key={m.id} match={m} mode={mode} isAdmin={isAdmin} locked={locked}
+            pred={myPreds[m.id]} result={results[m.id]}
+            onSavePred={onSavePred} onSaveResult={onSaveResult} />
+        ))}
+      </div>
+    </div>
+  ))
 }

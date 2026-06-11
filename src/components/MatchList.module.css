@@ -144,3 +144,41 @@
   white-space: nowrap;
 }
 .lockBtn:hover { opacity: .75; }
+
+/* Deadline banner */
+.deadlineBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  background: rgba(26,158,92,.07);
+  border: 1px solid rgba(26,158,92,.2);
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a6a42;
+  margin-bottom: 8px;
+}
+.deadlineLocked {
+  background: rgba(217,64,64,.06);
+  border-color: rgba(217,64,64,.2);
+  color: #a03030;
+}
+.deadlineLeft { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.deadlineDate { opacity: 0.65; font-weight: 500; }
+.lockBtn {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .12s;
+  white-space: nowrap;
+  flex: none;
+}
+.lockBtn:hover { opacity: .7; }

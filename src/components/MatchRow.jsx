@@ -13,9 +13,7 @@ function PtsBadge({ pts }) {
 }
 
 export default function MatchRow({ match: m, mode, pred: initPred, result: initResult, isAdmin, locked, onSavePred, onSaveResult }) {
-  // editable = false if: result mode + not admin, OR predict mode + locked
   const editable = mode === 'result' ? isAdmin : !locked
-
   const initSrc = mode === 'predict' ? initPred : initResult
   const [src, setSrc] = useState({ h: initSrc?.h ?? '', a: initSrc?.a ?? '', adv: initSrc?.adv })
 
@@ -32,11 +30,8 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
     const h = next.h === '' ? null : Number(next.h)
     const a = next.a === '' ? null : Number(next.a)
     const adv = (m.knockout && h != null && h === a) ? next.adv : undefined
-    if (mode === 'predict') {
-      await onSavePred(m.id, h, a, adv ?? null)
-    } else {
-      if (h != null && a != null) await onSaveResult(m.id, h, a, adv ?? null)
-    }
+    if (mode === 'predict') await onSavePred(m.id, h, a, adv ?? null)
+    else if (h != null && a != null) await onSaveResult(m.id, h, a, adv ?? null)
   }, [m, mode, onSavePred, onSaveResult])
 
   const onScore = (side) => async (e) => {
@@ -46,29 +41,30 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
     const h = next.h === '' ? null : Number(next.h)
     const a = next.a === '' ? null : Number(next.a)
     if (!(h != null && h === a)) next.adv = undefined
-    setSrc(next)
-    await commit(next)
+    setSrc(next); await commit(next)
   }
 
   const toggleAdv = async (team) => {
     const next = { ...src, adv: src.adv === team ? undefined : team }
-    setSrc(next)
-    await commit(next)
+    setSrc(next); await commit(next)
   }
 
   const scored = mode === 'predict' && pts != null
   const isKO = !!m.knockout
 
+  // time display: local venue time primary, ET secondary
+  const timeDisplay = m.localTime
+    ? `${m.localTime} ${m.localTz}`
+    : (m.etTime ? `${m.etTime} ET` : '')
+
   return (
     <div className={`${s.match} ${scored ? s.scored : ''} ${locked && mode === 'predict' ? s.lockedMatch : ''}`}>
-      {/* time + badge */}
       <div className={s.head}>
         <span className={s.badge}>{isKO ? STAGE_NAMES[m.stage] : `Grp ${m.group}`}</span>
-        <span className={s.time}>{m.time}<span className={s.et}> · {m.etTime} ET</span></span>
+        <span className={s.time}>{timeDisplay}</span>
         {mode === 'predict' && <PtsBadge pts={pts} />}
       </div>
 
-      {/* teams + score */}
       <div className={s.row}>
         <div className={s.home}>
           <span className={s.flag}>{flag(m.home)}</span>
@@ -95,18 +91,13 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
         </div>
       </div>
 
-      {/* KO advance */}
       {isKO && showAdv && (
         <div className={s.advance}>
           <div className={s.advLabel}>Draw — who advances? <span className={s.advBonus}>+1</span></div>
           <div className={s.advOpts}>
             {[m.home, m.away].map(team => (
-              <button
-                key={team}
-                className={src.adv === team ? s.advSel : ''}
-                onClick={() => editable && toggleAdv(team)}
-                disabled={!editable}
-              >
+              <button key={team} className={src.adv === team ? s.advSel : ''}
+                onClick={() => editable && toggleAdv(team)} disabled={!editable}>
                 <span>{flag(team)}</span>{team}
               </button>
             ))}
@@ -114,7 +105,6 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
         </div>
       )}
 
-      {/* official result (predict mode) */}
       {mode === 'predict' && initResult?.h != null && (
         <div className={s.resultLine}>
           Result: <b>{initResult.h}–{initResult.a}</b>
