@@ -46,7 +46,11 @@ export default function Users({ currentUser }) {
   }
 
   const deleteUser = async (username) => {
-    await sb.from('wc26_users').delete().eq('username', username)
+    // Delete user, their predictions, and their leaderboard entry
+    await Promise.all([
+      sb.from('wc26_users').delete().eq('username', username),
+      sb.from('wc26_predictions').delete().eq('username', username),
+    ])
     setConfirmDelete(null); setToast(`${username} deleted.`); load()
     setTimeout(() => setToast(''), 2000)
   }
