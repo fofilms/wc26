@@ -17,10 +17,10 @@ export default function Login({ onLogin }) {
 
   return (
     <div className={s.screen}>
-      <div className={s.card}>
-        <div className={s.ball}>⚽️</div>
-        <h2>WC26 Prediction League</h2>
-        <p>2026 FIFA World Cup · 104 matches.<br />Enter your name, make predictions, compete on the public leaderboard.</p>
+      <div className={s.logo}>
+        <img src="/emblem.jpg" alt="FIFA World Cup 26" />
+      </div>
+      <div className={s.inputWrap}>
         <input
           type="text"
           placeholder="Your name"
@@ -31,11 +31,11 @@ export default function Login({ onLogin }) {
           onChange={e => { setName(e.target.value); setErr('') }}
           onKeyDown={e => e.key === 'Enter' && go()}
         />
-        <button className={s.btn} onClick={go} disabled={loading}>
-          {loading ? <><span className="spinner" />Loading…</> : 'Join the League'}
+        <button onClick={go} disabled={loading}>
+          {loading ? '…' : '→'}
         </button>
-        {err && <div className={s.err}>{err}</div>}
       </div>
+      {err && <div className={s.err}>{err}</div>}
     </div>
   )
 }
