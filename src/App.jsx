@@ -74,7 +74,7 @@ export default function App() {
     <>
       <Header user={user} isAdmin={isAdmin} activeTab={tab} onTab={setTab} onLogout={handleLogout} />
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 14px 60px' }}>
-        {tab === 'predict'     && <Predict {...pageProps} isUserLocked={isUserLocked} />}
+        {tab === 'predict'     && <Predict {...pageProps} isUserLocked={isUserLocked} currentUser={user} />}
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}

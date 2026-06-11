@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { scoreMatch } from '../lib/scoring'
 import { STAGE_NAMES } from '../lib/constants'
 import fixtures from '../data/fixtures.json'
+import { sb } from '../supabaseClient'
 import s from './MatchRow.module.css'
 
 const flag = (t) => fixtures.flags[t] || ''
@@ -12,10 +13,30 @@ function PtsBadge({ pts }) {
   return <span className={`${s.ptsBadge} ${cls}`}>+{pts}</span>
 }
 
-export default function MatchRow({ match: m, mode, pred: initPred, result: initResult, isAdmin, locked, onSavePred, onSaveResult }) {
+// Cache user lock status per session
+const lockCache = {}
+
+async function checkUserLocked(username) {
+  if (username in lockCache) return lockCache[username]
+  const { data } = await sb.from('wc26_users').select('locked').eq('username', username).single()
+  lockCache[username] = data?.locked ?? false
+  return lockCache[username]
+}
+
+export default function MatchRow({ match: m, mode, pred: initPred, result: initResult, isAdmin, locked, currentUser, onSavePred, onSaveResult }) {
   const editable = mode === 'result' ? isAdmin : !locked
   const initSrc = mode === 'predict' ? initPred : initResult
   const [src, setSrc] = useState({ h: initSrc?.h ?? '', a: initSrc?.a ?? '', adv: initSrc?.adv })
+  const [userBlocked, setUserBlocked] = useState(false)
+
+  // Check if this user is locked for First Matches
+  useEffect(() => {
+    if (mode === 'predict' && m.matchday === 1 && currentUser) {
+      checkUserLocked(currentUser).then(setUserBlocked)
+    }
+  }, [mode, m.matchday, currentUser])
+
+  const isBlocked = editable === false || (mode === 'predict' && m.matchday === 1 && userBlocked)
 
   const curPred = mode === 'predict'
     ? { h: src.h === '' ? null : src.h, a: src.a === '' ? null : src.a, adv: src.adv }
@@ -27,14 +48,16 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
   const showAdv = m.knockout && hNum != null && aNum != null && hNum === aNum
 
   const commit = useCallback(async (next) => {
+    if (isBlocked) return
     const h = next.h === '' ? null : Number(next.h)
     const a = next.a === '' ? null : Number(next.a)
     const adv = (m.knockout && h != null && h === a) ? next.adv : undefined
     if (mode === 'predict') await onSavePred(m.id, h, a, adv ?? null)
     else if (h != null && a != null) await onSaveResult(m.id, h, a, adv ?? null)
-  }, [m, mode, onSavePred, onSaveResult])
+  }, [m, mode, isBlocked, onSavePred, onSaveResult])
 
   const onScore = (side) => async (e) => {
+    if (isBlocked) return
     const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 2)
     const next = { ...src, [side]: raw }
     if (raw !== '') next[side] = String(Math.min(99, parseInt(raw) || 0))
@@ -45,20 +68,18 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
   }
 
   const toggleAdv = async (team) => {
+    if (isBlocked) return
     const next = { ...src, adv: src.adv === team ? undefined : team }
     setSrc(next); await commit(next)
   }
 
   const scored = mode === 'predict' && pts != null
   const isKO = !!m.knockout
-
-  // time display: local venue time primary, ET secondary
-  const timeDisplay = m.localTime
-    ? `${m.localTime} ${m.localTz}`
-    : (m.etTime ? `${m.etTime} ET` : '')
+  const timeDisplay = m.localTime ? `${m.localTime} ${m.localTz}` : (m.etTime ? `${m.etTime} ET` : '')
+  const showReadonly = isBlocked
 
   return (
-    <div className={`${s.match} ${scored ? s.scored : ''} ${locked && mode === 'predict' ? s.lockedMatch : ''}`}>
+    <div className={`${s.match} ${scored ? s.scored : ''} ${isBlocked ? s.lockedMatch : ''}`}>
       <div className={s.head}>
         <span className={s.badge}>{isKO ? STAGE_NAMES[m.stage] : `Grp ${m.group}`}</span>
         <span className={s.time}>{timeDisplay}</span>
@@ -71,7 +92,7 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
           <span className={s.tname}>{m.home}</span>
         </div>
 
-        {editable ? (
+        {!showReadonly ? (
           <div className={s.scoreIn}>
             <input type="text" inputMode="numeric" value={src.h} onChange={onScore('h')} onFocus={e => e.target.select()} />
             <span>:</span>
@@ -91,13 +112,13 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
         </div>
       </div>
 
-      {isKO && showAdv && (
+      {isKO && showAdv && !showReadonly && (
         <div className={s.advance}>
           <div className={s.advLabel}>Draw — who advances? <span className={s.advBonus}>+1</span></div>
           <div className={s.advOpts}>
             {[m.home, m.away].map(team => (
               <button key={team} className={src.adv === team ? s.advSel : ''}
-                onClick={() => editable && toggleAdv(team)} disabled={!editable}>
+                onClick={() => toggleAdv(team)} disabled={isBlocked}>
                 <span>{flag(team)}</span>{team}
               </button>
             ))}

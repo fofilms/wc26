@@ -98,7 +98,7 @@ function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
   )
 }
 
-export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUserLocked, onSavePred, onSaveResult, onToggleLock }) {
+export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUserLocked, currentUser, onSavePred, onSaveResult, onToggleLock }) {
   const [view, setView] = useState('group')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
@@ -126,7 +126,7 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUs
             <DeadlineBanner matchday={md} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
           )}
           <GroupMatches matchday={md} mode={mode} results={results} myPreds={myPreds}
-            isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked} onSavePred={onSavePred} onSaveResult={onSaveResult} />
+            isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked} currentUser={currentUser} onSavePred={onSavePred} onSaveResult={onSaveResult} />
         </>
       ) : (
         <>
@@ -155,7 +155,7 @@ function isEffectiveLocked(matchday, locks) {
   return deadline ? Date.now() > deadline.getTime() : false
 }
 
-function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUserLocked, onSavePred, onSaveResult }) {
+function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUserLocked, currentUser, onSavePred, onSaveResult }) {
   const mdLocked = mode === 'predict' ? isEffectiveLocked(matchday, locks) : false
   const locked = mdLocked || (mode === 'predict' && matchday === 1 && !!isUserLocked)
   const ms = fixtures.groupMatches.filter(m => m.matchday === matchday)
@@ -168,7 +168,7 @@ function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUser
       <div className={s.grid}>
         {matches.map(m => (
           <MatchRow key={m.id} match={m} mode={mode} isAdmin={isAdmin} locked={locked}
-            pred={myPreds[m.id]} result={results[m.id]}
+            currentUser={currentUser} pred={myPreds[m.id]} result={results[m.id]}
             onSavePred={onSavePred} onSaveResult={onSaveResult} />
         ))}
       </div>
@@ -189,7 +189,7 @@ function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, onSavePred, 
       <div className={s.grid}>
         {matches.map(m => (
           <MatchRow key={m.id} match={m} mode={mode} isAdmin={isAdmin} locked={locked}
-            pred={myPreds[m.id]} result={results[m.id]}
+            currentUser={currentUser} pred={myPreds[m.id]} result={results[m.id]}
             onSavePred={onSavePred} onSaveResult={onSaveResult} />
         ))}
       </div>

@@ -1,7 +1,7 @@
 import MatchList from '../components/MatchList'
 import s from './Page.module.css'
 
-export default function Predict({ results, myPreds, isAdmin, locks, isUserLocked, onSavePred, onSaveResult, onToggleLock }) {
+export default function Predict({ results, myPreds, isAdmin, locks, isUserLocked, currentUser, onSavePred, onSaveResult, onToggleLock }) {
   return (
     <div>
       <div className={s.intro}>
@@ -19,7 +19,7 @@ export default function Predict({ results, myPreds, isAdmin, locks, isUserLocked
       <MatchList
         mode="predict"
         results={results} myPreds={myPreds}
-        isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked}
+        isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked} currentUser={currentUser}
         onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
       />
     </div>
