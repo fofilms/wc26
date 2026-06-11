@@ -77,7 +77,7 @@ export default function App() {
         {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
-        Predictions are private · Leaderboard is public · Match times are shown in local venue time
+        Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time
       </footer>
       <Toast message={toast} onDone={() => setToast(null)} />
     </>
