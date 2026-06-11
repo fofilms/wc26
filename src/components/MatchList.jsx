@@ -98,7 +98,7 @@ function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
   )
 }
 
-export default function MatchList({ mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
+export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUserLocked, onSavePred, onSaveResult, onToggleLock }) {
   const [view, setView] = useState('group')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
@@ -155,8 +155,9 @@ function isEffectiveLocked(matchday, locks) {
   return deadline ? Date.now() > deadline.getTime() : false
 }
 
-function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult }) {
-  const locked = mode === 'predict' ? isEffectiveLocked(matchday, locks) : false
+function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUserLocked, onSavePred, onSaveResult }) {
+  const mdLocked = mode === 'predict' ? isEffectiveLocked(matchday, locks) : false
+  const locked = mdLocked || (mode === 'predict' && matchday === 1 && !!isUserLocked)
   const ms = fixtures.groupMatches.filter(m => m.matchday === matchday)
   const byDay = {}
   ms.forEach(m => { if (!byDay[m.date]) byDay[m.date] = []; byDay[m.date].push(m) })

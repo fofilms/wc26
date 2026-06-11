@@ -19,7 +19,7 @@ export default function Predict({ results, myPreds, isAdmin, locks, isUserLocked
       <MatchList
         mode="predict"
         results={results} myPreds={myPreds}
-        isAdmin={isAdmin} locks={locks}
+        isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked}
         onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
       />
     </div>
