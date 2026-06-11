@@ -20,7 +20,7 @@ export default function App() {
 
   const isAdmin = user?.toLowerCase() === ADMIN
 
-  const { results, myPreds, leaderboard, loading, savePred, saveResult, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
 
   const handleSavePred = useCallback(async (...args) => {
     await savePred(...args)
@@ -30,6 +30,12 @@ export default function App() {
     await saveResult(...args)
     setToast('Result saved ✓')
   }, [saveResult])
+
+  const handleToggleLock = useCallback(async (key) => {
+    await toggleLock(key)
+    const isNowLocked = !locks[key]
+    setToast(isNowLocked ? 'Predictions locked 🔒' : 'Predictions unlocked 🔓')
+  }, [toggleLock, locks])
 
   const handleLogout = () => {
     try { localStorage.removeItem('wc26user') } catch {}
@@ -48,7 +54,12 @@ export default function App() {
     </div>
   )
 
-  const pageProps = { results, myPreds, isAdmin, onSavePred: handleSavePred, onSaveResult: handleSaveResult }
+  const pageProps = {
+    results, myPreds, isAdmin, locks,
+    onSavePred: handleSavePred,
+    onSaveResult: handleSaveResult,
+    onToggleLock: handleToggleLock,
+  }
 
   return (
     <>

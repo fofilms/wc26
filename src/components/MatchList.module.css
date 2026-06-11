@@ -72,3 +72,75 @@
   font-weight: 600;
   line-height: 1.5;
 }
+
+.filterRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.filterRow .chips { margin-bottom: 0; flex: 1; }
+
+.lockBtn {
+  flex: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: .12s;
+  white-space: nowrap;
+  margin-top: 0;
+}
+.lockBtn:hover { border-color: var(--ink); color: var(--ink); }
+.lockBtn.locked { background: #fff3cd; border-color: #e8a020; color: #9a6a00; }
+
+.lockBanner {
+  background: #fff8e6;
+  border: 1px solid #f0cc70;
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 10px;
+  color: #9a6a00;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Lock bar */
+.lockBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: rgba(26,158,92,.07);
+  border: 1px solid rgba(26,158,92,.2);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--good);
+  margin-bottom: 8px;
+}
+.lockBarLocked {
+  background: rgba(217,64,64,.06);
+  border-color: rgba(217,64,64,.2);
+  color: var(--bad);
+}
+.lockBtn {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .12s;
+  white-space: nowrap;
+}
+.lockBtn:hover { opacity: .75; }

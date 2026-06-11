@@ -1,27 +1,17 @@
 export const ADMIN = 'cevik'
 
 export const STAGE_NAMES = {
-  r32: 'R32',
-  r16: 'R16',
-  qf: 'QF',
-  sf: 'SF',
-  third: '3rd Place',
-  final: 'FINAL',
+  r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', third: '3rd Place', final: 'FINAL',
 }
-
 export const STAGE_NAMES_FULL = {
-  r32: 'Round of 32',
-  r16: 'Round of 16',
-  qf: 'Quarter-finals',
-  sf: 'Semi-finals',
-  third: '3rd Place',
-  final: 'Final',
+  r32: 'Round of 32', r16: 'Round of 16', qf: 'Quarter-finals',
+  sf: 'Semi-finals', third: '3rd Place', final: 'Final',
 }
-
 export const KO_ORDER = ['r32', 'r16', 'qf', 'sf', 'third', 'final']
+export const MD_LABELS = { 1: 'First Matches', 2: 'Second Matches', 3: 'Third Matches' }
 
-export const MD_LABELS = {
-  1: 'First Matches',
-  2: 'Second Matches',
-  3: 'Third Matches',
+// lock key for each section
+export function lockKey(view, md, ko) {
+  if (view === 'group') return `md_${md}`
+  return `ko_${ko}`
 }

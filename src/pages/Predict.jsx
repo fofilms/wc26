@@ -1,7 +1,7 @@
 import MatchList from '../components/MatchList'
 import s from './Page.module.css'
 
-export default function Predict({ results, myPreds, isAdmin, onSavePred, onSaveResult }) {
+export default function Predict({ results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
   return (
     <div>
       <div className={s.intro}>
@@ -11,16 +11,13 @@ export default function Predict({ results, myPreds, isAdmin, onSavePred, onSaveR
       <div className={s.scoringHelp}>
         <b>Scoring.</b>{' '}
         Group stage: <span className={s.pill}>2</span> exact score · <span className={s.pill}>1</span> correct outcome · 0 wrong.{' '}
-        Knockout: same system; if you predict a <b>draw</b> in normal time and pick the team that advances, you earn <b>+1</b> extra (even if decided by penalties).
+        Knockout: same system; predict a <b>draw</b> in normal time and pick who advances for <b>+1</b> extra (even if decided by penalties).
       </div>
       <MatchList
         mode="predict"
-        results={results}
-        myPreds={myPreds}
-        isAdmin={isAdmin}
-        onSavePred={onSavePred}
-        onSaveResult={onSaveResult}
-        notice="Knockout matchups depend on group results — slots are placeholders until confirmed."
+        results={results} myPreds={myPreds}
+        isAdmin={isAdmin} locks={locks}
+        onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
       />
     </div>
   )

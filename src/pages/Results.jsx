@@ -1,7 +1,7 @@
 import MatchList from '../components/MatchList'
 import s from './Page.module.css'
 
-export default function Results({ results, myPreds, isAdmin, onSavePred, onSaveResult }) {
+export default function Results({ results, myPreds, isAdmin, locks, onSavePred, onSaveResult, onToggleLock }) {
   return (
     <div>
       <div className={s.intro}>
@@ -9,16 +9,13 @@ export default function Results({ results, myPreds, isAdmin, onSavePred, onSaveR
         <p>Official match scores. Applied instantly to all players' points.</p>
       </div>
       <div className={s.notice}>
-        ⚠️ Admin only (Cevik). Writes directly to Supabase and affects everyone.
+        ⚠️ Admin only. Use the Lock/Unlock button to control whether players can still edit their predictions.
       </div>
       <MatchList
         mode="result"
-        results={results}
-        myPreds={myPreds}
-        isAdmin={isAdmin}
-        onSavePred={onSavePred}
-        onSaveResult={onSaveResult}
-        notice="Knockout slots are placeholders — update team names as matchups are confirmed."
+        results={results} myPreds={myPreds}
+        isAdmin={isAdmin} locks={locks}
+        onSavePred={onSavePred} onSaveResult={onSaveResult} onToggleLock={onToggleLock}
       />
     </div>
   )

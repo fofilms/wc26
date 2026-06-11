@@ -12,8 +12,10 @@ function PtsBadge({ pts }) {
   return <span className={`${s.ptsBadge} ${cls}`}>+{pts}</span>
 }
 
-export default function MatchRow({ match: m, mode, pred: initPred, result: initResult, isAdmin, onSavePred, onSaveResult }) {
-  const editable = mode === 'result' ? isAdmin : true
+export default function MatchRow({ match: m, mode, pred: initPred, result: initResult, isAdmin, locked, onSavePred, onSaveResult }) {
+  // editable = false if: result mode + not admin, OR predict mode + locked
+  const editable = mode === 'result' ? isAdmin : !locked
+
   const initSrc = mode === 'predict' ? initPred : initResult
   const [src, setSrc] = useState({ h: initSrc?.h ?? '', a: initSrc?.a ?? '', adv: initSrc?.adv })
 
@@ -58,7 +60,7 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
   const isKO = !!m.knockout
 
   return (
-    <div className={`${s.match} ${scored ? s.scored : ''}`}>
+    <div className={`${s.match} ${scored ? s.scored : ''} ${locked && mode === 'predict' ? s.lockedMatch : ''}`}>
       {/* time + badge */}
       <div className={s.head}>
         <span className={s.badge}>{isKO ? STAGE_NAMES[m.stage] : `Grp ${m.group}`}</span>
@@ -81,8 +83,8 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
           </div>
         ) : (
           <div className={s.scoreStatic}>
-            {initResult?.h != null
-              ? <>{initResult.h}<span className={s.dash}>:</span>{initResult.a}</>
+            {(mode === 'predict' ? (src.h !== '' ? src : null) : initResult)?.h != null
+              ? <>{(mode === 'predict' ? src : initResult).h}<span className={s.dash}>:</span>{(mode === 'predict' ? src : initResult).a}</>
               : <span className={s.q}>–</span>}
           </div>
         )}

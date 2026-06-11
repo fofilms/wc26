@@ -93,3 +93,6 @@
   font-weight: 600; display: flex; gap: 4px; flex-wrap: wrap;
 }
 .resultLine b { color: var(--ink); }
+
+.lockedMatch { opacity: 0.85; }
+.lockedMatch .scoreStatic { color: var(--muted); }
