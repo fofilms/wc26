@@ -75,7 +75,7 @@ export default function App() {
         {tab === 'users'    && isAdmin && <Users currentUser={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
-        Predictions are private · Leaderboard is public · Times in Berlin CEST
+        Predictions are private · Leaderboard is public · Match times are shown in local venue time
       </footer>
       <Toast message={toast} onDone={() => setToast(null)} />
     </>

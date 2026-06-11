@@ -15,10 +15,7 @@ export default function Header({ user, isAdmin, activeTab, onTab, onLogout }) {
     <header className={s.header}>
       <div className={s.inner}>
         <div className={s.crest}>⚽️</div>
-        <div className={s.title}>
-          <h1>WC26 Prediction League</h1>
-          <p>FOL Films · 2026 FIFA World Cup</p>
-        </div>
+        <h1 className={s.title}>2026 FIFA World Cup</h1>
         <div className={s.whoami}>
           <b>{user}</b>
           <div className={s.meta}>
