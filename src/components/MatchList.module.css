@@ -1,0 +1,75 @@
+.seg {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 2px;
+  margin-bottom: 10px;
+}
+.seg button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 6px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: .15s;
+}
+.seg button.active { background: var(--amber); color: var(--ink); }
+
+.chips { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+}
+.chip:hover { color: var(--chalk); }
+.chipActive { background: var(--chalk); color: var(--ink); border-color: var(--chalk); }
+
+.dayDiv {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 11px 0 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.dayDiv::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* 2-column grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.notice {
+  background: rgba(255,183,3,.09);
+  border: 1px solid rgba(255,183,3,.28);
+  border-radius: 9px;
+  padding: 7px 10px;
+  font-size: 10px;
+  color: #ffe09a;
+  margin-bottom: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+}

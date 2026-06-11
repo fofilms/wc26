@@ -1,0 +1,40 @@
+:root {
+  --pitch: #0a5c36;
+  --pitch-dark: #063d24;
+  --pitch-deep: #04301c;
+  --chalk: #eef1ed;
+  --ink: #0a130d;
+  --amber: #ffb703;
+  --amber-2: #fb8500;
+  --card: #10201a;
+  --border: rgba(238, 241, 237, 0.10);
+  --good: #3ddc84;
+  --bad: #ff5d5d;
+  --muted: #8ba398;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(130% 90% at 50% -20%, #0c6a3e 0%, var(--pitch) 38%, var(--pitch-deep) 100%);
+  background-attachment: fixed;
+  color: var(--chalk);
+  min-height: 100vh;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+}
+
+button { cursor: pointer; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,.2); border-top-color: var(--amber);
+  border-radius: 50%; animation: spin .7s linear infinite; margin-right: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

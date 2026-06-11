@@ -1,0 +1,62 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(4,48,28,.97), rgba(4,48,28,.82));
+  border-bottom: 1px solid var(--border);
+}
+
+.inner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.crest {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  flex: none;
+  background: linear-gradient(135deg, var(--amber), var(--amber-2));
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.title h1 { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
+.title p  { font-size: 9.5px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+.whoami { margin-left: auto; text-align: right; }
+.whoami b { display: block; font-size: 11.5px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.adm { font-size: 8.5px; font-weight: 800; color: var(--amber); letter-spacing: .06em; }
+.whoami a { color: var(--muted); cursor: pointer; font-weight: 700; font-size: 9.5px; }
+.whoami a:hover { color: var(--chalk); }
+
+.tabs {
+  display: flex;
+  gap: 3px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 9px 8px;
+  overflow-x: auto;
+}
+.tabs button {
+  flex: none;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11.5px;
+  padding: 6px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+}
+.tabs button:hover { color: var(--chalk); background: rgba(255,255,255,.05); }
+.tabs button.active { background: var(--amber); color: var(--ink); }
