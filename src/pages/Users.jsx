@@ -9,9 +9,11 @@ export default function Users({ currentUser }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null)
   const [toast, setToast] = useState('')
 
   const canSeePasswords = currentUser?.toLowerCase() === SUPERADMIN
+  const canDelete = currentUser?.toLowerCase() === SUPERADMIN
 
   const load = async () => {
     setLoading(true)
@@ -43,13 +45,19 @@ export default function Users({ currentUser }) {
     setTimeout(() => setToast(''), 2000)
   }
 
+  const deleteUser = async (username) => {
+    await sb.from('wc26_users').delete().eq('username', username)
+    setConfirmDelete(null); setToast(`${username} deleted.`); load()
+    setTimeout(() => setToast(''), 2000)
+  }
+
   if (loading) return <div className={s.empty}><div className={s.big}>👤</div>Loading…</div>
 
   return (
     <div>
       <div className={s.intro}>
         <h2>Users</h2>
-        <p>All registered players.{canSeePasswords ? ' You can edit usernames and passwords.' : ' You can edit usernames.'}</p>
+        <p>All registered players.{canSeePasswords ? ' Edit usernames, passwords, or delete users.' : ' Edit usernames.'}</p>
       </div>
 
       {toast && <div className={u.toast}>{toast}</div>}
@@ -85,6 +93,14 @@ export default function Users({ currentUser }) {
                   <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
                 </div>
               </div>
+            ) : confirmDelete === usr.username ? (
+              <div className={u.editBlock}>
+                <div className={u.confirmText}>Delete <b>{usr.username}</b>? This cannot be undone.</div>
+                <div className={u.editActions}>
+                  <button className={u.deleteConfirmBtn} onClick={() => deleteUser(usr.username)}>Yes, delete</button>
+                  <button className={u.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
+                </div>
+              </div>
             ) : (
               <>
                 <div className={u.userInfo}>
@@ -93,9 +109,16 @@ export default function Users({ currentUser }) {
                     <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
                   )}
                 </div>
-                <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
-                  Edit
-                </button>
+                <div className={u.actions}>
+                  <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
+                    Edit
+                  </button>
+                  {canDelete && usr.username.toLowerCase() !== SUPERADMIN && (
+                    <button className={u.deleteBtn} onClick={() => setConfirmDelete(usr.username)}>
+                      Delete
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>

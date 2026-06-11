@@ -15,6 +15,8 @@
 .uname { font-weight: 700; font-size: 12px; color: var(--ink); }
 .upw { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
 
+.actions { display: flex; gap: 4px; flex: none; }
+
 .editBtn {
   background: transparent;
   border: 1px solid var(--border);
@@ -26,11 +28,27 @@
   border-radius: 5px;
   cursor: pointer;
   transition: .12s;
-  white-space: nowrap;
 }
 .editBtn:hover { border-color: var(--ink); color: var(--ink); }
 
+.deleteBtn {
+  background: transparent;
+  border: 1px solid rgba(217,64,64,.3);
+  color: var(--bad);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .12s;
+}
+.deleteBtn:hover { background: rgba(217,64,64,.06); }
+
 .editBlock { width: 100%; display: flex; flex-direction: column; gap: 7px; }
+
+.confirmText { font-size: 11px; color: var(--ink); font-weight: 500; }
+.confirmText b { font-weight: 700; }
 
 .editRow { display: flex; align-items: center; gap: 8px; }
 .editRow label { font-size: 10px; font-weight: 600; color: var(--muted); width: 70px; flex: none; }
@@ -51,46 +69,29 @@
 .editActions { display: flex; gap: 5px; flex-wrap: wrap; }
 
 .saveBtn {
-  background: var(--ink);
-  color: #fff;
-  border: none;
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: var(--ink); color: #fff; border: none;
+  font-family: inherit; font-size: 10px; font-weight: 700;
+  padding: 5px 11px; border-radius: 5px; cursor: pointer;
 }
 .renameBtn {
-  background: transparent;
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: transparent; border: 1px solid var(--ink); color: var(--ink);
+  font-family: inherit; font-size: 10px; font-weight: 700;
+  padding: 5px 11px; border-radius: 5px; cursor: pointer;
 }
 .cancelBtn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 5px 11px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  font-family: inherit; font-size: 10px; font-weight: 600;
+  padding: 5px 11px; border-radius: 5px; cursor: pointer;
+}
+.deleteConfirmBtn {
+  background: var(--bad); color: #fff; border: none;
+  font-family: inherit; font-size: 10px; font-weight: 700;
+  padding: 5px 11px; border-radius: 5px; cursor: pointer;
 }
 
 .toast {
-  background: var(--ink);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 7px 12px;
-  border-radius: 7px;
-  margin-bottom: 10px;
-  display: inline-block;
+  background: var(--ink); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 7px 12px; border-radius: 7px;
+  margin-bottom: 10px; display: inline-block;
 }
