@@ -12,6 +12,7 @@ export function useWC26(user) {
   const [locks, setLocks]           = useState({}) // { md_1: true, md_2: false, ... }
   const [loading, setLoading]       = useState(true)
   const [allPreds, setAllPreds]      = useState({}) // { username: { matchId: {h,a,adv} } }
+  const [userLocks, setUserLocks]    = useState({}) // { username: true/false }
   const channelRef = useRef(null)
 
   const parseResult = (row) => ({ h: row.home_score, a: row.away_score, adv: row.advance ?? undefined })
@@ -34,6 +35,14 @@ export function useWC26(user) {
     setMyPreds(map)
     return map
   }, [user])
+
+  const loadUserLocks = useCallback(async () => {
+    const { data } = await sb.from('wc26_users').select('username,locked')
+    const map = {}
+    ;(data || []).forEach(r => { map[r.username] = r.locked ?? false })
+    setUserLocks(map)
+    return map
+  }, [])
 
   const loadLocks = useCallback(async () => {
     const { data } = await sb.from('wc26_locks').select('*')
@@ -65,7 +74,7 @@ export function useWC26(user) {
     let cancelled = false
     const init = async () => {
       setLoading(true)
-      const [res] = await Promise.all([loadResults(), loadMyPreds(), loadLocks()])
+      const [res] = await Promise.all([loadResults(), loadMyPreds(), loadLocks(), loadUserLocks()])
       if (!cancelled) {
         await loadLeaderboard(res)
         setLoading(false)
@@ -118,10 +127,16 @@ export function useWC26(user) {
     setLocks(prev => ({ ...prev, [key]: !current }))
   }, [locks])
 
+  const toggleUserLock = useCallback(async (username) => {
+    const current = userLocks[username] ?? false
+    await sb.from('wc26_users').update({ locked: !current }).eq('username', username)
+    setUserLocks(prev => ({ ...prev, [username]: !current }))
+  }, [userLocks])
+
   const refreshLeaderboard = useCallback(async () => {
     const res = await loadResults()
     await loadLeaderboard(res)
   }, [loadResults, loadLeaderboard])
 
-  return { results, myPreds, leaderboard, allPreds, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard }
+  return { results, myPreds, leaderboard, allPreds, locks, userLocks, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard }
 }

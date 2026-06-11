@@ -17,6 +17,30 @@
 
 .actions { display: flex; gap: 4px; flex: none; }
 
+.lockTag {
+  font-size: 8.5px; font-weight: 700; color: var(--bad);
+  background: rgba(217,64,64,.08); border: 1px solid rgba(217,64,64,.2);
+  padding: 1px 6px; border-radius: 4px;
+}
+
+.lockBtn2 {
+  background: transparent;
+  border: 1px solid rgba(217,64,64,.3);
+  color: var(--bad);
+  font-family: inherit; font-size: 10px; font-weight: 600;
+  padding: 4px 10px; border-radius: 5px; cursor: pointer; transition: .12s;
+}
+.lockBtn2:hover { background: rgba(217,64,64,.06); }
+
+.unlockBtn {
+  background: transparent;
+  border: 1px solid rgba(26,158,92,.3);
+  color: var(--good);
+  font-family: inherit; font-size: 10px; font-weight: 600;
+  padding: 4px 10px; border-radius: 5px; cursor: pointer; transition: .12s;
+}
+.unlockBtn:hover { background: rgba(26,158,92,.06); }
+
 .editBtn {
   background: transparent;
   border: 1px solid var(--border);

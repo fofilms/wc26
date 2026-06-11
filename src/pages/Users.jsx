@@ -5,7 +5,7 @@ import u from './Users.module.css'
 
 const SUPERADMIN = 'cevik'
 
-export default function Users({ currentUser }) {
+export default function Users({ currentUser, userLocks, onToggleUserLock }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
@@ -46,7 +46,6 @@ export default function Users({ currentUser }) {
   }
 
   const deleteUser = async (username) => {
-    // Delete user, their predictions, and their leaderboard entry
     await Promise.all([
       sb.from('wc26_users').delete().eq('username', username),
       sb.from('wc26_predictions').delete().eq('username', username),
@@ -61,72 +60,82 @@ export default function Users({ currentUser }) {
     <div>
       <div className={s.intro}>
         <h2>Users</h2>
-        <p>All registered players.{canSeePasswords ? ' Edit usernames, passwords, or delete users.' : ' Edit usernames.'}</p>
+        <p>Manage players. Lock a user to prevent them from editing predictions.</p>
       </div>
 
       {toast && <div className={u.toast}>{toast}</div>}
 
       <div className={u.list}>
-        {users.map(usr => (
-          <div key={usr.username} className={u.row}>
-            {editing?.username === usr.username ? (
-              <div className={u.editBlock}>
-                <div className={u.editRow}>
-                  <label>Username</label>
-                  <input
-                    type="text"
-                    value={editing.newUsername ?? editing.username}
-                    onChange={e => setEditing(prev => ({ ...prev, newUsername: e.target.value }))}
-                  />
-                </div>
-                {canSeePasswords && (
+        {users.map(usr => {
+          const isLocked = userLocks?.[usr.username] ?? false
+          return (
+            <div key={usr.username} className={u.row}>
+              {editing?.username === usr.username ? (
+                <div className={u.editBlock}>
                   <div className={u.editRow}>
-                    <label>Password</label>
+                    <label>Username</label>
                     <input
                       type="text"
-                      value={editing.password}
-                      onChange={e => setEditing(prev => ({ ...prev, password: e.target.value }))}
+                      value={editing.newUsername ?? editing.username}
+                      onChange={e => setEditing(prev => ({ ...prev, newUsername: e.target.value }))}
                     />
                   </div>
-                )}
-                <div className={u.editActions}>
-                  <button className={u.saveBtn} onClick={save}>Save</button>
-                  {editing.newUsername && editing.newUsername !== editing.username && (
-                    <button className={u.renameBtn} onClick={rename}>Rename</button>
-                  )}
-                  <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
-                </div>
-              </div>
-            ) : confirmDelete === usr.username ? (
-              <div className={u.editBlock}>
-                <div className={u.confirmText}>Delete <b>{usr.username}</b>? This cannot be undone.</div>
-                <div className={u.editActions}>
-                  <button className={u.deleteConfirmBtn} onClick={() => deleteUser(usr.username)}>Yes, delete</button>
-                  <button className={u.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className={u.userInfo}>
-                  <span className={u.uname}>{usr.username}</span>
                   {canSeePasswords && (
-                    <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
+                    <div className={u.editRow}>
+                      <label>Password</label>
+                      <input
+                        type="text"
+                        value={editing.password}
+                        onChange={e => setEditing(prev => ({ ...prev, password: e.target.value }))}
+                      />
+                    </div>
                   )}
+                  <div className={u.editActions}>
+                    <button className={u.saveBtn} onClick={save}>Save</button>
+                    {editing.newUsername && editing.newUsername !== editing.username && (
+                      <button className={u.renameBtn} onClick={rename}>Rename</button>
+                    )}
+                    <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
+                  </div>
                 </div>
-                <div className={u.actions}>
-                  <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
-                    Edit
-                  </button>
-                  {canDelete && usr.username.toLowerCase() !== SUPERADMIN && (
-                    <button className={u.deleteBtn} onClick={() => setConfirmDelete(usr.username)}>
-                      Delete
+              ) : confirmDelete === usr.username ? (
+                <div className={u.editBlock}>
+                  <div className={u.confirmText}>Delete <b>{usr.username}</b>? This cannot be undone.</div>
+                  <div className={u.editActions}>
+                    <button className={u.deleteConfirmBtn} onClick={() => deleteUser(usr.username)}>Yes, delete</button>
+                    <button className={u.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className={u.userInfo}>
+                    <span className={u.uname}>{usr.username}</span>
+                    {isLocked && <span className={u.lockTag}>🔒 locked</span>}
+                    {canSeePasswords && (
+                      <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
+                    )}
+                  </div>
+                  <div className={u.actions}>
+                    <button
+                      className={isLocked ? u.unlockBtn : u.lockBtn2}
+                      onClick={() => onToggleUserLock(usr.username)}
+                    >
+                      {isLocked ? 'Unlock' : 'Lock'}
                     </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+                    <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
+                      Edit
+                    </button>
+                    {canDelete && usr.username.toLowerCase() !== SUPERADMIN && (
+                      <button className={u.deleteBtn} onClick={() => setConfirmDelete(usr.username)}>
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
