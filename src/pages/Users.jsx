@@ -3,11 +3,15 @@ import { sb } from '../supabaseClient'
 import s from './Page.module.css'
 import u from './Users.module.css'
 
+const SUPERADMIN = 'cevik'
+
 export default function Users({ currentUser }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(null) // { username, password }
+  const [editing, setEditing] = useState(null)
   const [toast, setToast] = useState('')
+
+  const canSeePasswords = currentUser?.toLowerCase() === SUPERADMIN
 
   const load = async () => {
     setLoading(true)
@@ -25,9 +29,7 @@ export default function Users({ currentUser }) {
       { username: editing.username, password: editing.password, updated_at: new Date().toISOString() },
       { onConflict: 'username' }
     )
-    setEditing(null)
-    setToast('Saved ✓')
-    load()
+    setEditing(null); setToast('Saved ✓'); load()
     setTimeout(() => setToast(''), 2000)
   }
 
@@ -35,12 +37,9 @@ export default function Users({ currentUser }) {
     if (!editing) return
     const trimmed = editing.newUsername?.trim()
     if (!trimmed || trimmed.length < 2) { setToast('Name too short.'); return }
-    // insert new, delete old
     await sb.from('wc26_users').insert({ username: trimmed, password: editing.password })
     await sb.from('wc26_users').delete().eq('username', editing.username)
-    setEditing(null)
-    setToast('Renamed ✓')
-    load()
+    setEditing(null); setToast('Renamed ✓'); load()
     setTimeout(() => setToast(''), 2000)
   }
 
@@ -50,7 +49,7 @@ export default function Users({ currentUser }) {
     <div>
       <div className={s.intro}>
         <h2>Users</h2>
-        <p>All registered players. You can edit usernames and passwords.</p>
+        <p>All registered players.{canSeePasswords ? ' You can edit usernames and passwords.' : ' You can edit usernames.'}</p>
       </div>
 
       {toast && <div className={u.toast}>{toast}</div>}
@@ -68,18 +67,20 @@ export default function Users({ currentUser }) {
                     onChange={e => setEditing(prev => ({ ...prev, newUsername: e.target.value }))}
                   />
                 </div>
-                <div className={u.editRow}>
-                  <label>Password</label>
-                  <input
-                    type="text"
-                    value={editing.password}
-                    onChange={e => setEditing(prev => ({ ...prev, password: e.target.value }))}
-                  />
-                </div>
+                {canSeePasswords && (
+                  <div className={u.editRow}>
+                    <label>Password</label>
+                    <input
+                      type="text"
+                      value={editing.password}
+                      onChange={e => setEditing(prev => ({ ...prev, password: e.target.value }))}
+                    />
+                  </div>
+                )}
                 <div className={u.editActions}>
-                  <button className={u.saveBtn} onClick={save}>Save password</button>
+                  <button className={u.saveBtn} onClick={save}>Save</button>
                   {editing.newUsername && editing.newUsername !== editing.username && (
-                    <button className={u.renameBtn} onClick={rename}>Rename user</button>
+                    <button className={u.renameBtn} onClick={rename}>Rename</button>
                   )}
                   <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
                 </div>
@@ -88,7 +89,9 @@ export default function Users({ currentUser }) {
               <>
                 <div className={u.userInfo}>
                   <span className={u.uname}>{usr.username}</span>
-                  <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
+                  {canSeePasswords && (
+                    <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
+                  )}
                 </div>
                 <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
                   Edit
