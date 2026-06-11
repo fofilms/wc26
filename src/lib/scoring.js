@@ -28,14 +28,17 @@ export function scoreMatch(match, pred, result) {
 }
 
 export function computeTotals(allMatches, preds, results) {
-  let group = 0, ko = 0, count = 0
+  let group = 0, ko = 0, count = 0, exact = 0, winner = 0, predicted = 0
   for (const m of allMatches) {
-    const s = scoreMatch(m, preds[m.id], results[m.id])
+    const p = preds[m.id]
+    if (p?.h != null) predicted++
+    const s = scoreMatch(m, p, results[m.id])
     if (s != null) {
       count++
-      if (m.knockout) ko += s
-      else group += s
+      if (m.knockout) ko += s; else group += s
+      if (s >= 2) exact++
+      else if (s === 1) winner++
     }
   }
-  return { group, ko, total: group + ko, count }
+  return { group, ko, total: group + ko, count, exact, winner, predicted }
 }

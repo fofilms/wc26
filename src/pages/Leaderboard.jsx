@@ -22,7 +22,9 @@ export default function Leaderboard({ leaderboard, user, onRefresh }) {
             </div>
             <div className={s.lbStat}>
               <div className={s.lbPts}>{u.total}<span> pts</span></div>
-              <div className={s.lbSub}>{u.total} pts · {u.count || 0} matches scored</div>
+              <div className={s.lbSub}>
+                {u.predicted || 0} predicted · {(u.winner || 0)} correct outcome · {u.exact || 0} exact score
+              </div>
             </div>
           </div>
         ))
