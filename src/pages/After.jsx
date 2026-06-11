@@ -14,6 +14,9 @@ export default function After({ results, allPreds, currentUser }) {
   const [ko, setKo] = useState('r32')
   const [selected, setSelected] = useState(null) // matchId
 
+  // Debug: log what we have
+  // console.log('results keys:', Object.keys(results).slice(0,5), 'allPreds users:', Object.keys(allPreds).length)
+
   const matches = view === 'group'
     ? fixtures.groupMatches.filter(m => m.matchday === md)
     : fixtures.knockout.filter(m => m.stage === ko)

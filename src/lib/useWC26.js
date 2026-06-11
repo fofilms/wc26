@@ -107,8 +107,9 @@ export function useWC26(user) {
       advance: adv ?? null, updated_at: new Date().toISOString(),
     }
     await sb.from('wc26_results').upsert(row, { onConflict: 'match_id' })
-    setResults(prev => ({ ...prev, [matchId]: { h, a, adv } }))
-  }, [])
+    const newResults = await loadResults()
+    await loadLeaderboard(newResults)
+  }, [loadResults, loadLeaderboard])
 
   const toggleLock = useCallback(async (key) => {
     const current = locks[key] ?? false
