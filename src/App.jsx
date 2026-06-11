@@ -78,7 +78,7 @@ export default function App() {
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}
-        {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} allPreds={allPreds} />}
+        {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} />}
         {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>

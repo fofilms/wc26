@@ -5,24 +5,9 @@ import u from './Users.module.css'
 
 const SUPERADMIN = 'cevik'
 
-function PredCount({ username, allPreds }) {
-  const preds = allPreds?.[username] || {}
-  const count = Object.keys(preds).filter(id => id.startsWith('G')).length
-  if (count === 0) return null
-  return (
-    <span style={{
-      fontSize: '9px', fontWeight: 700,
-      padding: '1px 6px', borderRadius: '4px',
-      background: count === 24 ? 'rgba(61,220,132,.15)' : 'rgba(0,0,0,.05)',
-      color: count === 24 ? 'var(--good)' : 'var(--muted)',
-      border: count === 24 ? '1px solid rgba(61,220,132,.3)' : '1px solid transparent',
-    }}>
-      {count}/24
-    </span>
-  )
-}
 
-export default function Users({ currentUser, userLocks, onToggleUserLock, allPreds }) {
+
+export default function Users({ currentUser, userLocks, onToggleUserLock }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
@@ -32,10 +17,23 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, allPre
   const canSeePasswords = currentUser?.toLowerCase() === SUPERADMIN
   const canDelete = currentUser?.toLowerCase() === SUPERADMIN
 
+  const [predCounts, setPredCounts] = useState({})
+
   const load = async () => {
     setLoading(true)
-    const { data } = await sb.from('wc26_users').select('*').order('created_at')
-    setUsers(data || [])
+    const [usersRes, predsRes] = await Promise.all([
+      sb.from('wc26_users').select('*').order('created_at'),
+      sb.from('wc26_predictions').select('username, match_id'),
+    ])
+    setUsers(usersRes.data || [])
+    // count group match predictions per user
+    const counts = {}
+    ;(predsRes.data || []).forEach(r => {
+      if (r.match_id?.startsWith('G')) {
+        counts[r.username] = (counts[r.username] || 0) + 1
+      }
+    })
+    setPredCounts(counts)
     setLoading(false)
   }
 
