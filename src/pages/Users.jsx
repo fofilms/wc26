@@ -5,7 +5,24 @@ import u from './Users.module.css'
 
 const SUPERADMIN = 'cevik'
 
-export default function Users({ currentUser, userLocks, onToggleUserLock }) {
+function PredCount({ username, allPreds }) {
+  const preds = allPreds?.[username] || {}
+  const count = Object.keys(preds).filter(id => id.startsWith('G')).length
+  if (count === 0) return null
+  return (
+    <span style={{
+      fontSize: '9px', fontWeight: 700,
+      padding: '1px 6px', borderRadius: '4px',
+      background: count === 24 ? 'rgba(61,220,132,.15)' : 'rgba(0,0,0,.05)',
+      color: count === 24 ? 'var(--good)' : 'var(--muted)',
+      border: count === 24 ? '1px solid rgba(61,220,132,.3)' : '1px solid transparent',
+    }}>
+      {count}/24
+    </span>
+  )
+}
+
+export default function Users({ currentUser, userLocks, onToggleUserLock, allPreds }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
