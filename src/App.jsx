@@ -1,5 +1,5 @@
 import fixtures from './data/fixtures.json'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Login from './components/Login'
 import Header from './components/Header'
 import Toast from './components/Toast'
@@ -22,14 +22,16 @@ export default function App() {
   const [toast, setToast] = useState(null)
 
   const isAdmin = ADMINS.includes(user?.toLowerCase())
+  const isUserLockedRef = useRef(false)
 
   const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard } = useWC26(user)
+  isUserLockedRef.current = isUserLocked
 
   const handleSavePred = useCallback(async (matchId, ...rest) => {
     const isFirstMatch = fixtures.groupMatches.find(m => m.id === matchId)?.matchday === 1
-    if (isFirstMatch && isUserLocked) return
+    if (isFirstMatch && isUserLockedRef.current) return
     await savePred(matchId, ...rest)
-  }, [savePred, isUserLocked])
+  }, [savePred])
 
   const handleSaveResult = useCallback(async (...args) => {
     await saveResult(...args)
