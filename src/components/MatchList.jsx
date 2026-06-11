@@ -126,7 +126,7 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUs
             <DeadlineBanner matchday={md} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
           )}
           <GroupMatches matchday={md} mode={mode} results={results} myPreds={myPreds}
-            isAdmin={isAdmin} locks={locks} onSavePred={onSavePred} onSaveResult={onSaveResult} />
+            isAdmin={isAdmin} locks={locks} isUserLocked={isUserLocked} onSavePred={onSavePred} onSaveResult={onSaveResult} />
         </>
       ) : (
         <>
