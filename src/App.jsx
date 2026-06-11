@@ -1,3 +1,4 @@
+import fixtures from './data/fixtures.json'
 import { useState, useCallback } from 'react'
 import Login from './components/Login'
 import Header from './components/Header'
@@ -22,11 +23,14 @@ export default function App() {
 
   const isAdmin = ADMINS.includes(user?.toLowerCase())
 
-  const { results, myPreds, leaderboard, allPreds, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, allPreds, locks, userLocks, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard } = useWC26(user)
 
-  const handleSavePred = useCallback(async (...args) => {
-    await savePred(...args)
-  }, [savePred])
+  const handleSavePred = useCallback(async (matchId, ...rest) => {
+    // per-user lock only applies to First Matches (md_1)
+    const isFirstMatch = fixtures.groupMatches.find(m => m.id === matchId)?.matchday === 1
+    if (isFirstMatch && userLocks[user]) return
+    await savePred(matchId, ...rest)
+  }, [savePred, userLocks, user])
 
   const handleSaveResult = useCallback(async (...args) => {
     await saveResult(...args)
@@ -73,7 +77,7 @@ export default function App() {
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}
-        {tab === 'users'    && isAdmin && <Users currentUser={user} />}
+        {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} />}
         {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
