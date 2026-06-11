@@ -2,7 +2,7 @@ export const ADMINS = ['cevik', 'hermit']
 export const ADMIN = 'cevik' // backwards compat
 
 // hermit is hidden from leaderboard
-export const HIDDEN_USERS = ['hermit']
+export const HIDDEN_USERS = ['hermit', 'test']
 
 export const STAGE_NAMES = {
   r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', third: '3rd Place', final: 'FINAL',
