@@ -28,9 +28,15 @@ export default function App() {
   const handleSavePred = useCallback(async (matchId, ...rest) => {
     // per-user lock only applies to First Matches (md_1)
     const isFirstMatch = fixtures.groupMatches.find(m => m.id === matchId)?.matchday === 1
-    if (isFirstMatch && userLocks[user]) return
+    if (isFirstMatch) {
+      // check Supabase directly to be sure
+      const { data } = await import('./supabaseClient').then(m => 
+        m.sb.from('wc26_users').select('locked').eq('username', user).single()
+      )
+      if (data?.locked) return
+    }
     await savePred(matchId, ...rest)
-  }, [savePred, userLocks, user])
+  }, [savePred, user])
 
   const handleSaveResult = useCallback(async (...args) => {
     await saveResult(...args)
