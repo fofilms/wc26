@@ -7,7 +7,7 @@ import Standings from './pages/Standings'
 import Leaderboard from './pages/Leaderboard'
 import Results from './pages/Results'
 import { useWC26 } from './lib/useWC26'
-import { ADMIN } from './lib/constants'
+import { ADMINS, HIDDEN_USERS } from './lib/constants'
 
 function getSavedUser() {
   try { return localStorage.getItem('wc26user') } catch { return null }
@@ -18,7 +18,8 @@ export default function App() {
   const [tab, setTab] = useState('predict')
   const [toast, setToast] = useState(null)
 
-  const isAdmin = user?.toLowerCase() === ADMIN
+  const isAdmin = ADMINS.includes(user?.toLowerCase())
+  const isHidden = HIDDEN_USERS.includes(user?.toLowerCase())
 
   const { results, myPreds, leaderboard, locks, loading, savePred, saveResult, toggleLock, refreshLeaderboard } = useWC26(user)
 
@@ -54,6 +55,9 @@ export default function App() {
     </div>
   )
 
+  // filter hidden users from leaderboard
+  const visibleLeaderboard = leaderboard.filter(u => !HIDDEN_USERS.includes(u.name.toLowerCase()))
+
   const pageProps = {
     results, myPreds, isAdmin, locks,
     onSavePred: handleSavePred,
@@ -67,7 +71,7 @@ export default function App() {
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 14px 60px' }}>
         {tab === 'predict'     && <Predict {...pageProps} />}
         {tab === 'standings'   && <Standings results={results} />}
-        {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} user={user} onRefresh={refreshLeaderboard} />}
+        {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results' && isAdmin && <Results {...pageProps} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
