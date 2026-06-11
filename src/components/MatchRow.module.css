@@ -2,7 +2,7 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 7px 8px;
   transition: border-color .12s;
 }
 .match.scored { border-left: 2px solid var(--good); }
@@ -11,29 +11,29 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 .badge {
   display: inline-grid;
   place-items: center;
   padding: 0 4px;
   height: 14px;
-  background: rgba(255,183,3,.15);
-  color: var(--amber);
+  background: rgba(0,0,0,.06);
+  color: var(--muted);
   border-radius: 3px;
   font-size: 8.5px;
-  font-weight: 800;
+  font-weight: 700;
   flex: none;
   white-space: nowrap;
 }
-.time { font-size: 9px; font-weight: 700; color: var(--muted); }
-.et   { opacity: 0.55; }
+.time { font-size: 9px; font-weight: 600; color: var(--muted); }
+.et   { opacity: 0.6; }
 
-.ptsBadge { margin-left: auto; font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
-.s0 { background: rgba(139,163,152,.15); color: var(--muted); }
-.s1 { background: rgba(255,183,3,.18);   color: var(--amber); }
-.s2 { background: rgba(61,220,132,.18);  color: var(--good);  }
-.s3 { background: rgba(61,220,132,.28);  color: var(--good);  }
+.ptsBadge { margin-left: auto; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
+.s0 { background: rgba(0,0,0,.05);        color: var(--muted); }
+.s1 { background: rgba(232,160,32,.15);   color: var(--amber-2); }
+.s2 { background: rgba(26,158,92,.14);    color: var(--good); }
+.s3 { background: rgba(26,158,92,.22);    color: var(--good); }
 
 .row {
   display: grid;
@@ -44,37 +44,37 @@
 .home { display: flex; align-items: center; gap: 4px; min-width: 0; }
 .away { display: flex; align-items: center; gap: 4px; min-width: 0; flex-direction: row-reverse; text-align: right; }
 .flag { font-size: 14px; flex: none; line-height: 1; }
-.tname { font-weight: 600; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tname { font-weight: 600; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
 
 .scoreIn { display: flex; align-items: center; gap: 3px; }
 .scoreIn input {
   width: 26px; height: 26px;
   text-align: center;
-  background: var(--pitch-deep);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-  color: var(--chalk);
+  color: var(--ink);
   font-family: inherit;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   outline: none;
   transition: border-color .12s;
 }
-.scoreIn input:focus { border-color: var(--amber); }
-.scoreIn span { color: var(--muted); font-weight: 800; font-size: 10px; }
+.scoreIn input:focus { border-color: var(--ink); }
+.scoreIn span { color: var(--muted); font-weight: 600; font-size: 10px; }
 
-.scoreStatic { display: flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 800; }
+.scoreStatic { display: flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; color: var(--ink); }
 .dash { color: var(--muted); font-size: 10px; }
 .q    { color: var(--muted); font-size: 12px; }
 
 .advance { margin-top: 5px; }
-.advLabel { font-size: 9px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
-.advBonus { color: var(--amber); }
+.advLabel { font-size: 9px; font-weight: 600; color: var(--muted); margin-bottom: 3px; }
+.advBonus { color: var(--good); font-weight: 700; }
 .advOpts  { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
 .advOpts button {
-  background: var(--pitch-deep);
+  background: var(--bg);
   border: 1px solid var(--border);
-  color: var(--chalk);
+  color: var(--ink);
   font-family: inherit;
   font-weight: 600;
   font-size: 9.5px;
@@ -83,14 +83,13 @@
   cursor: pointer;
   transition: .12s;
   display: flex; align-items: center; gap: 3px; justify-content: center;
-  overflow: hidden;
 }
-.advOpts button:hover { border-color: var(--amber); }
-.advOpts button.advSel { background: var(--amber); color: var(--ink); border-color: var(--amber); }
-.advOpts button:disabled { opacity: .5; cursor: not-allowed; }
+.advOpts button:hover { border-color: var(--ink); }
+.advOpts button.advSel { background: var(--ink); color: #fff; border-color: var(--ink); }
+.advOpts button:disabled { opacity: .4; cursor: not-allowed; }
 
 .resultLine {
   font-size: 9px; color: var(--muted); margin-top: 4px;
   font-weight: 600; display: flex; gap: 4px; flex-wrap: wrap;
 }
-.resultLine b { color: var(--chalk); }
+.resultLine b { color: var(--ink); }

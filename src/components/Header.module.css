@@ -2,46 +2,46 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  background: rgba(240, 244, 248, 0.92);
   backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(4,48,28,.97), rgba(4,48,28,.82));
   border-bottom: 1px solid var(--border);
 }
 
 .inner {
-  max-width: 680px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 9px 12px;
+  padding: 8px 14px;
   display: flex;
   align-items: center;
   gap: 9px;
 }
 
 .crest {
-  width: 30px; height: 30px;
-  border-radius: 8px;
+  width: 26px; height: 26px;
+  border-radius: 6px;
   flex: none;
-  background: linear-gradient(135deg, var(--amber), var(--amber-2));
+  background: var(--ink);
   display: grid;
   place-items: center;
-  font-size: 15px;
+  font-size: 13px;
 }
 
-.title h1 { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
-.title p  { font-size: 9.5px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.title h1 { font-size: 12px; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+.title p  { font-size: 9px; color: var(--muted); font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
 
 .whoami { margin-left: auto; text-align: right; }
-.whoami b { display: block; font-size: 11.5px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.meta { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-.adm { font-size: 8.5px; font-weight: 800; color: var(--amber); letter-spacing: .06em; }
-.whoami a { color: var(--muted); cursor: pointer; font-weight: 700; font-size: 9.5px; }
-.whoami a:hover { color: var(--chalk); }
+.whoami b { display: block; font-size: 11px; font-weight: 700; color: var(--ink); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta { display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
+.adm { font-size: 8px; font-weight: 800; color: var(--amber); letter-spacing: .06em; background: rgba(232,160,32,.12); padding: 1px 5px; border-radius: 3px; }
+.whoami a { color: var(--muted); cursor: pointer; font-weight: 600; font-size: 9px; }
+.whoami a:hover { color: var(--ink); }
 
 .tabs {
   display: flex;
-  gap: 3px;
-  max-width: 680px;
+  gap: 2px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 0 9px 8px;
+  padding: 0 10px 7px;
   overflow-x: auto;
 }
 .tabs button {
@@ -50,13 +50,13 @@
   border: none;
   color: var(--muted);
   font-family: inherit;
-  font-weight: 700;
-  font-size: 11.5px;
-  padding: 6px 11px;
-  border-radius: 7px;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: .15s;
+  transition: .12s;
   white-space: nowrap;
 }
-.tabs button:hover { color: var(--chalk); background: rgba(255,255,255,.05); }
-.tabs button.active { background: var(--amber); color: var(--ink); }
+.tabs button:hover { color: var(--ink); background: rgba(0,0,0,.04); }
+.tabs button.active { background: var(--ink); color: #fff; }

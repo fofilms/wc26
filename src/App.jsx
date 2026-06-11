@@ -40,9 +40,9 @@ export default function App() {
   if (!user) return <Login onLogin={setUser} />
 
   if (loading) return (
-    <div style={{ display:'grid', placeItems:'center', minHeight:'60vh', fontSize:13, color:'var(--muted)' }}>
+    <div style={{ display:'grid', placeItems:'center', minHeight:'60vh', fontSize:12, color:'#7a8a99' }}>
       <div style={{ textAlign:'center' }}>
-        <div style={{ fontSize:30, marginBottom:10 }}>⚽️</div>
+        <div style={{ fontSize:28, marginBottom:10 }}>⚽️</div>
         Loading…
       </div>
     </div>
@@ -53,14 +53,14 @@ export default function App() {
   return (
     <>
       <Header user={user} isAdmin={isAdmin} activeTab={tab} onTab={setTab} onLogout={handleLogout} />
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 12px 60px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 14px 60px' }}>
         {tab === 'predict'     && <Predict {...pageProps} />}
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results' && isAdmin && <Results {...pageProps} />}
       </div>
-      <footer style={{ textAlign:'center', color:'var(--muted)', fontSize:'9px', padding:'20px 0 8px', fontWeight:600 }}>
-        Predictions are private · Leaderboard is public · Times shown in Berlin CEST
+      <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
+        Predictions are private · Leaderboard is public · Times in Berlin CEST
       </footer>
       <Toast message={toast} onDone={() => setToast(null)} />
     </>
