@@ -13,6 +13,7 @@ export function useWC26(user) {
   const [loading, setLoading]       = useState(true)
   const [allPreds, setAllPreds]      = useState({}) // { username: { matchId: {h,a,adv} } }
   const [userLocks, setUserLocks]    = useState({}) // { username: true/false }
+  const [isUserLocked, setIsUserLocked] = useState(false) // current user's own lock status
   const channelRef = useRef(null)
 
   const parseResult = (row) => ({ h: row.home_score, a: row.away_score, adv: row.advance ?? undefined })
@@ -41,8 +42,13 @@ export function useWC26(user) {
     const map = {}
     ;(data || []).forEach(r => { map[r.username] = r.locked ?? false })
     setUserLocks(map)
+    // set current user's own lock status
+    if (user) {
+      const mine = (data || []).find(r => r.username === user)
+      setIsUserLocked(mine?.locked ?? false)
+    }
     return map
-  }, [])
+  }, [user])
 
   const loadLocks = useCallback(async () => {
     const { data } = await sb.from('wc26_locks').select('*')
@@ -138,5 +144,5 @@ export function useWC26(user) {
     await loadLeaderboard(res)
   }, [loadResults, loadLeaderboard])
 
-  return { results, myPreds, leaderboard, allPreds, locks, userLocks, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard }
+  return { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard }
 }

@@ -23,20 +23,13 @@ export default function App() {
 
   const isAdmin = ADMINS.includes(user?.toLowerCase())
 
-  const { results, myPreds, leaderboard, allPreds, locks, userLocks, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard } = useWC26(user)
 
   const handleSavePred = useCallback(async (matchId, ...rest) => {
-    // per-user lock only applies to First Matches (md_1)
     const isFirstMatch = fixtures.groupMatches.find(m => m.id === matchId)?.matchday === 1
-    if (isFirstMatch) {
-      // check Supabase directly to be sure
-      const { data } = await import('./supabaseClient').then(m => 
-        m.sb.from('wc26_users').select('locked').eq('username', user).single()
-      )
-      if (data?.locked) return
-    }
+    if (isFirstMatch && isUserLocked) return
     await savePred(matchId, ...rest)
-  }, [savePred, user])
+  }, [savePred, isUserLocked])
 
   const handleSaveResult = useCallback(async (...args) => {
     await saveResult(...args)
@@ -79,7 +72,7 @@ export default function App() {
     <>
       <Header user={user} isAdmin={isAdmin} activeTab={tab} onTab={setTab} onLogout={handleLogout} />
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 14px 60px' }}>
-        {tab === 'predict'     && <Predict {...pageProps} />}
+        {tab === 'predict'     && <Predict {...pageProps} isUserLocked={isUserLocked} />}
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}
