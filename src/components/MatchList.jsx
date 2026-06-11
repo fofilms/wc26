@@ -43,7 +43,6 @@ function DeadlineBanner({ matchday, isAdmin, locks, onToggleLock }) {
   }, [remaining, locked, isAdmin])
 
   const deadlinePassed = remaining !== null && remaining <= 0
-  const autoLocked = deadlinePassed && !locked // deadline passed but admin hasn't manually locked
 
   const formatCountdown = (ms) => {
     if (ms <= 0) return null
@@ -56,7 +55,9 @@ function DeadlineBanner({ matchday, isAdmin, locks, onToggleLock }) {
     return `${hrs}h ${mins}m ${secs}s`
   }
 
-  const effectiveLocked = locked || deadlinePassed
+  // Admin explicit state wins; otherwise deadline auto-locks
+  const hasExplicitState = locks && lockKey in locks
+  const effectiveLocked = hasExplicitState ? locked : (deadlinePassed || locked)
 
   return (
     <div className={`${s.deadlineBanner} ${effectiveLocked ? s.deadlineLocked : ''}`}>
@@ -147,10 +148,11 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, onSa
 
 function isEffectiveLocked(matchday, locks) {
   const lockKey = `md_${matchday}`
-  const manualLocked = locks?.[lockKey] ?? false
+  // If admin has explicitly set lock state, always respect it (overrides deadline)
+  if (locks && lockKey in locks) return locks[lockKey]
+  // No explicit admin action yet — auto-lock when deadline passes
   const deadline = DEADLINES[matchday]
-  const deadlinePassed = deadline && Date.now() > deadline.getTime()
-  return manualLocked || deadlinePassed
+  return deadline ? Date.now() > deadline.getTime() : false
 }
 
 function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult }) {
