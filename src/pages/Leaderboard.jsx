@@ -10,8 +10,8 @@ export default function Leaderboard({ leaderboard, user, onRefresh }) {
         <p>Public · updates live as results are entered.</p>
       </div>
 
-      <div className={s.potBanner}>
-        🏆 POT: ~5300 MXN (300 USD) <span className={s.potTo}>to whoever gets first place</span>
+      <div className={s.potLine}>
+        Pot: ~5300 MXN (300 USD) · to whoever finishes 1st
       </div>
       <button className={s.refreshBtn} onClick={onRefresh}>↻ Refresh</button>
       {leaderboard.length === 0 ? (
