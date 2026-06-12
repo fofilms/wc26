@@ -21,14 +21,23 @@ export default function Users({ currentUser, userLocks, onToggleUserLock }) {
 
   const load = async () => {
     setLoading(true)
-    const [usersRes, predsRes] = await Promise.all([
-      sb.from('wc26_users').select('*').order('created_at'),
-      sb.from('wc26_predictions').select('username, match_id'),
-    ])
+    const usersRes = await sb.from('wc26_users').select('*').order('created_at')
     setUsers(usersRes.data || [])
-    // count group match predictions per user
+
+    // Paginate predictions query (Supabase caps at 1000 rows per request)
+    const pageSize = 1000
+    let from = 0
+    let allPreds = []
+    while (true) {
+      const { data, error } = await sb.from('wc26_predictions').select('username, match_id').range(from, from + pageSize - 1)
+      if (error || !data) break
+      allPreds = allPreds.concat(data)
+      if (data.length < pageSize) break
+      from += pageSize
+    }
+
     const counts = {}
-    ;(predsRes.data || []).forEach(r => {
+    allPreds.forEach(r => {
       if (r.match_id?.startsWith('G')) {
         counts[r.username] = (counts[r.username] || 0) + 1
       }

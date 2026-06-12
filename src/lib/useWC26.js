@@ -5,6 +5,22 @@ import fixtures from '../data/fixtures.json'
 
 const allMatches = [...fixtures.groupMatches, ...fixtures.knockout]
 
+// Supabase/PostgREST defaults to a max of 1000 rows per request.
+// With many users x many matches, predictions can exceed that, so we paginate.
+async function fetchAllPredictions() {
+  const pageSize = 1000
+  let from = 0
+  let all = []
+  while (true) {
+    const { data, error } = await sb.from('wc26_predictions').select('*').range(from, from + pageSize - 1)
+    if (error || !data) break
+    all = all.concat(data)
+    if (data.length < pageSize) break
+    from += pageSize
+  }
+  return all
+}
+
 export function useWC26(user) {
   const [results, setResults]       = useState({})
   const [myPreds, setMyPreds]       = useState({})
@@ -59,7 +75,7 @@ export function useWC26(user) {
   }, [])
 
   const loadLeaderboard = useCallback(async (currentResults) => {
-    const { data } = await sb.from('wc26_predictions').select('*')
+    const data = await fetchAllPredictions()
     const byUser = {}
     ;(data || []).forEach(r => {
       if (!byUser[r.username]) byUser[r.username] = {}
