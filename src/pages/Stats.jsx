@@ -354,7 +354,14 @@ function Trivia({ allPreds, results }) {
     drawLover && { icon:'🤝', label:'Draw lover', text:`${drawLover[0]} predicted the most draws — ${drawLover[1]} times.` },
     prophet && { icon:'🤓', label:'Score prophet', text:`${prophet[0]} got the exact score right ${prophet[1]} time${prophet[1]>1?'s':''}.` },
     sharpest && { icon:'🎯', label:'Sharpest player', text:`${sharpest[0]} correctly predicted the outcome in ${sharpest[2]} of ${sharpest[3]} played matches (${sharpest[1]}%).` },
-    { icon:'🔒', label:'Defensive predictions', text:`${defensiveCount} total predictions of 0-0, 1-0 or 0-1 across all matches.` },
+    (() => {
+      const defCounts = {}
+      allEntries.forEach(({username, pred}) => {
+        if ((pred.h+pred.a) <= 1) defCounts[username]=(defCounts[username]||0)+1
+      })
+      const top = Object.entries(defCounts).sort((a,b)=>b[1]-a[1])[0]
+      return top ? { icon:'🔒', label:'Most defensive player', text:`${top[0]} predicted a clean sheet ${top[1]} time${top[1]>1?'s':''} (0-0, 1-0 or 0-1).` } : null
+    })(),
     closestMatch && { icon:'📊', label:'Closest to reality', text:`${closestMatch.match.home} vs ${closestMatch.match.away} — avg prediction was ${closestMatch.avgH}-${closestMatch.avgA}, actual was ${closestMatch.r.h}-${closestMatch.r.a}.` },
     avgPredGoals && avgActualGoals && { icon:'📈', label:'Goal average', text:`Players predicted ${avgPredGoals} goals/match on average. Actual average: ${avgActualGoals} goals/match.` },
   ].filter(Boolean)
