@@ -56,9 +56,9 @@ function OutcomeBar({ homeWins, awayWins, draws, total, home, away }) {
         {ap > 0 && <div className={s.barAway} style={{ width: ap + '%' }}>{ap}%</div>}
       </div>
       <div className={s.outcomeNums}>
-        <span>{homeWins} players</span>
-        <span>{draws} players</span>
-        <span>{awayWins} players</span>
+        <span>{homeWins} players: {home} wins</span>
+        <span>{draws} players: draw</span>
+        <span>{awayWins} players: {away} wins</span>
       </div>
     </div>
   )
