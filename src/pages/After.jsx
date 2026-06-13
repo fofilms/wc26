@@ -22,6 +22,7 @@ export default function After({ results, allPreds, currentUser, isSpectator }) {
     : fixtures.knockout.filter(m => m.stage === ko)
 
   // spectators see all matches; others only see matches with official result
+  console.log('After debug:', {isSpectator, matchesLen: matches.length, resultsKeys: Object.keys(results).length, allPredsUsers: Object.keys(allPreds).length})
   const played = isSpectator ? matches : matches.filter(m => results[m.id]?.h != null)
 
   return (
