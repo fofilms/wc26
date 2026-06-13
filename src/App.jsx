@@ -24,7 +24,7 @@ export default function App() {
   const isAdmin = ADMINS.includes(user?.toLowerCase())
   const isUserLockedRef = useRef(false)
 
-  const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard } = useWC26(user)
   isUserLockedRef.current = isUserLocked
 
   const handleSavePred = useCallback(async (matchId, ...rest) => {
@@ -78,8 +78,8 @@ export default function App() {
         {tab === 'standings'   && <Standings results={results} />}
         {tab === 'leaderboard' && <Leaderboard leaderboard={visibleLeaderboard} user={user} onRefresh={refreshLeaderboard} />}
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}
-        {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} />}
-        {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} />}
+        {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} onToggleSpectator={toggleSpectator} />}
+        {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} isSpectator={isSpectator} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
         Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time

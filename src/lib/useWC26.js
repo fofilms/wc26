@@ -30,6 +30,7 @@ export function useWC26(user) {
   const [allPreds, setAllPreds]      = useState({}) // { username: { matchId: {h,a,adv} } }
   const [userLocks, setUserLocks]    = useState({}) // { username: true/false }
   const [isUserLocked, setIsUserLocked] = useState(false) // current user's own lock status
+  const [isSpectator, setIsSpectator]     = useState(false) // can see all predictions
   const channelRef = useRef(null)
 
   const parseResult = (row) => ({ h: row.home_score, a: row.away_score, adv: row.advance ?? undefined })
@@ -54,14 +55,14 @@ export function useWC26(user) {
   }, [user])
 
   const loadUserLocks = useCallback(async () => {
-    const { data } = await sb.from('wc26_users').select('username,locked')
+    const { data } = await sb.from('wc26_users').select('username,locked,is_spectator')
     const map = {}
     ;(data || []).forEach(r => { map[r.username] = r.locked ?? false })
     setUserLocks(map)
-    // set current user's own lock status
     if (user) {
       const mine = (data || []).find(r => r.username === user)
       setIsUserLocked(mine?.locked ?? false)
+      setIsSpectator(mine?.is_spectator ?? false)
     }
     return map
   }, [user])
@@ -149,6 +150,10 @@ export function useWC26(user) {
     setLocks(prev => ({ ...prev, [key]: !current }))
   }, [locks])
 
+  const toggleSpectator = useCallback(async (username, current) => {
+    await sb.from('wc26_users').update({ is_spectator: !current }).eq('username', username)
+  }, [])
+
   const toggleUserLock = useCallback(async (username) => {
     const current = userLocks[username] ?? false
     await sb.from('wc26_users').update({ locked: !current }).eq('username', username)
@@ -160,5 +165,5 @@ export function useWC26(user) {
     await loadLeaderboard(res)
   }, [loadResults, loadLeaderboard])
 
-  return { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, loading, savePred, saveResult, toggleLock, toggleUserLock, refreshLeaderboard }
+  return { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard }
 }

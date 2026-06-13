@@ -29,6 +29,20 @@
   border: 1px solid rgba(26,158,92,.3);
 }
 
+.spectatorOn {
+  background: rgba(26,158,92,.12);
+  border: 1px solid rgba(26,158,92,.3);
+  color: var(--good);
+  font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer; transition: .12s;
+}
+.spectatorOff {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer; transition: .12s;
+}
+.spectatorOff:hover { border-color: var(--ink); color: var(--ink); }
+
 .lockTag {
   font-size: 8.5px; font-weight: 700; color: var(--bad);
   background: rgba(217,64,64,.08); border: 1px solid rgba(217,64,64,.2);

@@ -7,11 +7,8 @@ import s from './After.module.css'
 
 const flag = (t) => fixtures.flags[t] || ''
 
-const SPECTATORS = ['cevik'] // can see all predictions regardless of result
-
 // Only show predictions for matches that have an official result
-export default function After({ results, allPreds, currentUser }) {
-  const isSpectator = SPECTATORS.includes(currentUser?.toLowerCase())
+export default function After({ results, allPreds, currentUser, isSpectator }) {
   const [view, setView] = useState('group')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')

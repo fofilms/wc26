@@ -7,7 +7,7 @@ const SUPERADMIN = 'cevik'
 
 
 
-export default function Users({ currentUser, userLocks, onToggleUserLock }) {
+export default function Users({ currentUser, userLocks, onToggleUserLock, onToggleSpectator }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
@@ -18,11 +18,15 @@ export default function Users({ currentUser, userLocks, onToggleUserLock }) {
   const canDelete = currentUser?.toLowerCase() === SUPERADMIN
 
   const [predCounts, setPredCounts] = useState({})
+  const [spectators, setSpectators] = useState({})
 
   const load = async () => {
     setLoading(true)
     const usersRes = await sb.from('wc26_users').select('*').order('created_at')
     setUsers(usersRes.data || [])
+    const specMap = {}
+    ;(usersRes.data || []).forEach(r => { specMap[r.username] = r.is_spectator ?? false })
+    setSpectators(specMap)
 
     // Paginate predictions query (Supabase caps at 1000 rows per request)
     const pageSize = 1000
@@ -67,6 +71,12 @@ export default function Users({ currentUser, userLocks, onToggleUserLock }) {
     await sb.from('wc26_users').delete().eq('username', editing.username)
     setEditing(null); setToast('Renamed ✓'); load()
     setTimeout(() => setToast(''), 2000)
+  }
+
+  const handleToggleSpectator = async (username) => {
+    const current = spectators[username] ?? false
+    await onToggleSpectator(username, current)
+    setSpectators(prev => ({ ...prev, [username]: !current }))
   }
 
   const deleteUser = async (username) => {
@@ -141,6 +151,11 @@ export default function Users({ currentUser, userLocks, onToggleUserLock }) {
                     )}
                   </div>
                   <div className={u.actions}>
+                    <button
+                      className={spectators[usr.username] ? u.spectatorOn : u.spectatorOff}
+                      onClick={() => handleToggleSpectator(usr.username)}
+                      title={spectators[usr.username] ? 'Remove spectator access' : 'Give spectator access'}
+                    >👁</button>
                     <button
                       className={isLocked ? u.unlockBtn : u.lockBtn2}
                       onClick={() => onToggleUserLock(usr.username)}
