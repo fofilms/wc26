@@ -7,8 +7,11 @@ import s from './After.module.css'
 
 const flag = (t) => fixtures.flags[t] || ''
 
+const SPECTATORS = ['cevik'] // can see all predictions regardless of result
+
 // Only show predictions for matches that have an official result
 export default function After({ results, allPreds, currentUser }) {
+  const isSpectator = SPECTATORS.includes(currentUser?.toLowerCase())
   const [view, setView] = useState('group')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
@@ -21,8 +24,8 @@ export default function After({ results, allPreds, currentUser }) {
     ? fixtures.groupMatches.filter(m => m.matchday === md)
     : fixtures.knockout.filter(m => m.stage === ko)
 
-  // only matches with official result
-  const played = matches.filter(m => results[m.id]?.h != null)
+  // spectators see all matches; others only see matches with official result
+  const played = isSpectator ? matches : matches.filter(m => results[m.id]?.h != null)
 
   return (
     <div className={s.wrap}>
@@ -50,7 +53,7 @@ export default function After({ results, allPreds, currentUser }) {
       </div>
 
       {played.length === 0 ? (
-        <div className={s.empty}>No results entered yet for this stage.</div>
+        <div className={s.empty}>{isSpectator ? 'No matches in this stage.' : 'No results entered yet for this stage.'}</div>
       ) : (
         <div className={s.cols}>
           {/* Left: match list */}
@@ -78,7 +81,7 @@ export default function After({ results, allPreds, currentUser }) {
           {/* Right: predictions panel */}
           <div className={s.predsPanel}>
             {selected ? (
-              <PredsPanel matchId={selected} results={results} allPreds={allPreds} currentUser={currentUser} />
+              <PredsPanel matchId={selected} results={results} allPreds={allPreds} currentUser={currentUser} isSpectator={isSpectator} />
             ) : (
               <div className={s.panelEmpty}>← Select a match to see predictions</div>
             )}
@@ -89,7 +92,7 @@ export default function After({ results, allPreds, currentUser }) {
   )
 }
 
-function PredsPanel({ matchId, results, allPreds, currentUser }) {
+function PredsPanel({ matchId, results, allPreds, currentUser, isSpectator }) {
   const m = [...fixtures.groupMatches, ...fixtures.knockout].find(x => x.id === matchId)
   if (!m) return null
   const r = results[matchId]
@@ -112,11 +115,11 @@ function PredsPanel({ matchId, results, allPreds, currentUser }) {
     <div className={s.panel}>
       <div className={s.panelTitle}>
         {flag(m.home)} {m.home} vs {m.away} {flag(m.away)}
-        <span className={s.panelResult}>Result: {r.h}–{r.a}{r.adv ? ` · ${r.adv} advances` : ''}</span>
+        {r ? <span className={s.panelResult}>Result: {r.h}–{r.a}{r.adv ? ` · ${r.adv} advances` : ''}</span> : isSpectator ? <span className={s.panelResult}>Result not yet entered</span> : null}
       </div>
       <div className={s.predList}>
         {entries.map(({ username, pred }) => {
-          const pts = scoreMatch(m, pred, r)
+          const pts = r ? scoreMatch(m, pred, r) : null
           const isMe = username === currentUser
           return (
             <div key={username} className={`${s.predRow} ${isMe ? s.predMe : ''}`}>
