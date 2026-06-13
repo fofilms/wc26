@@ -1,0 +1,124 @@
+.intro { padding: 12px 2px 8px; }
+.intro h2 { font-size: 14px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+.intro p  { color: var(--muted); font-size: 10.5px; margin-top: 1px; }
+
+.seg {
+  display: flex; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 2px; margin-bottom: 10px;
+}
+.seg button {
+  flex: 1; background: transparent; border: none; color: var(--muted);
+  font-family: inherit; font-weight: 600; font-size: 11px;
+  padding: 6px; border-radius: 6px; cursor: pointer; transition: .12s;
+}
+.seg button.active { background: var(--ink); color: #fff; }
+
+.chips { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  font-family: inherit; font-weight: 600; font-size: 10px;
+  padding: 4px 10px; border-radius: 999px; cursor: pointer; transition: .12s; white-space: nowrap;
+}
+.chip:hover { color: var(--ink); }
+.chipActive { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+/* Match card */
+.matchCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.matchHead {
+  padding: 9px 11px 8px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.02);
+}
+.matchMeta { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.matchBadge {
+  font-size: 8.5px; font-weight: 800; padding: 1px 5px; border-radius: 3px;
+  background: rgba(0,0,0,.07); color: var(--muted);
+}
+.matchDate { font-size: 9px; color: var(--muted); font-weight: 600; }
+.matchTeams { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--ink); }
+.vs { color: var(--muted); font-size: 9.5px; font-weight: 500; }
+.teamName { display: flex; align-items: center; gap: 3px; }
+.officialResult {
+  font-size: 9px; color: var(--good); font-weight: 700;
+  margin-top: 4px;
+}
+
+.noPreds { padding: 14px 11px; font-size: 10px; color: var(--muted); }
+
+.statsBody { padding: 10px 11px; }
+.totalBadge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  color: var(--muted); margin-bottom: 8px;
+}
+
+/* Outcome bar */
+.outcomeWrap { margin-bottom: 10px; }
+.outcomeLabels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; font-weight: 600; color: var(--muted); margin-bottom: 4px;
+}
+.bar {
+  display: flex; border-radius: 5px; overflow: hidden; height: 22px;
+  background: var(--bg); gap: 1px;
+}
+.barHome {
+  background: #378ADD; color: #fff; font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 20px; transition: width .4s;
+}
+.barDraw {
+  background: #888780; color: #fff; font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 20px; transition: width .4s;
+}
+.barAway {
+  background: #D85A30; color: #fff; font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 20px; transition: width .4s;
+}
+.outcomeNums {
+  display: flex; justify-content: space-between;
+  font-size: 8.5px; color: var(--muted); margin-top: 3px;
+}
+
+/* Score section */
+.scoreSection { }
+.topScores { display: flex; gap: 5px; margin-bottom: 6px; }
+.scoreCard {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; padding: 6px 8px; min-width: 0;
+}
+.scoreTop {
+  background: rgba(55,138,221,.08);
+  border-color: rgba(55,138,221,.25);
+}
+.scoreVal { font-size: 16px; font-weight: 800; color: var(--ink); line-height: 1; margin-bottom: 2px; }
+.scoreCount { font-size: 8.5px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+.scoreUsers {
+  font-size: 8px; color: var(--muted); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.rareScores { margin-top: 4px; }
+.rareTitle { font-size: 8.5px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+.rareGrid { display: flex; flex-wrap: wrap; gap: 4px; }
+.rareItem {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 5px; padding: 3px 7px;
+  display: flex; align-items: center; gap: 5px;
+}
+.rareScore { font-size: 10px; font-weight: 800; color: var(--ink); }
+.rareUser  { font-size: 8.5px; color: var(--muted); }
+
+.empty { color: var(--muted); font-size: 11px; padding: 30px 0; text-align: center; }

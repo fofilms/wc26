@@ -8,6 +8,7 @@ import Standings from './pages/Standings'
 import Leaderboard from './pages/Leaderboard'
 import Results from './pages/Results'
 import After from './pages/After'
+import Stats from './pages/Stats'
 import Users from './pages/Users'
 import { useWC26 } from './lib/useWC26'
 import { ADMINS, HIDDEN_USERS } from './lib/constants'
@@ -80,6 +81,7 @@ export default function App() {
         {tab === 'results'  && isAdmin && <Results {...pageProps} />}
         {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} onToggleSpectator={toggleSpectator} />}
         {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} isSpectator={isSpectator} />}
+        {tab === 'stats' && <Stats allPreds={allPreds} results={results} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
         Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time
