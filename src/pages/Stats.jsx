@@ -134,6 +134,159 @@ function MatchStats({ match: m, allPreds, results }) {
   )
 }
 
+function Trivia({ allPreds, results }) {
+  const allMatches = [...fixtures.groupMatches, ...fixtures.knockout]
+  const playedMatches = allMatches.filter(m => results[m.id]?.h != null)
+
+  // collect all predictions across all matches
+  const allEntries = [] // {username, matchId, pred, match}
+  allMatches.forEach(m => {
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      if (preds[m.id]?.h != null) allEntries.push({ username, matchId: m.id, pred: preds[m.id], match: m })
+    })
+  })
+
+  if (allEntries.length === 0) return null
+
+  // 1. Most brave: rarest score pick (lowest count, only from played matches)
+  let braveEntry = null
+  let braveCount = Infinity
+  playedMatches.forEach(m => {
+    const scoreMap = {}
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      if (preds[m.id]?.h == null) return
+      const key = `${preds[m.id].h}-${preds[m.id].a}`
+      if (!scoreMap[key]) scoreMap[key] = []
+      scoreMap[key].push(username)
+    })
+    Object.entries(scoreMap).forEach(([score, users]) => {
+      if (users.length < braveCount) {
+        braveCount = users.length
+        braveEntry = { match: m, score, users }
+      }
+    })
+  })
+
+  // 2. Most consensus: highest % agreeing on one score (played matches)
+  let consensusEntry = null
+  let consensusPct = 0
+  playedMatches.forEach(m => {
+    const scoreMap = {}
+    let total = 0
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      if (preds[m.id]?.h == null) return
+      const key = `${preds[m.id].h}-${preds[m.id].a}`
+      scoreMap[key] = (scoreMap[key] || 0) + 1
+      total++
+    })
+    if (!total) return
+    Object.entries(scoreMap).forEach(([score, count]) => {
+      const pct = count / total
+      if (pct > consensusPct) {
+        consensusPct = pct
+        consensusEntry = { match: m, score, count, total }
+      }
+    })
+  })
+
+  // 3. Most predicted winner (across all predictions)
+  const winnerCount = {}
+  allEntries.forEach(({ pred, match }) => {
+    if (pred.h > pred.a) winnerCount[match.home] = (winnerCount[match.home] || 0) + 1
+    else if (pred.a > pred.h) winnerCount[match.away] = (winnerCount[match.away] || 0) + 1
+  })
+  const topWinner = Object.entries(winnerCount).sort((a,b) => b[1]-a[1])[0]
+
+  // 4. Most surprising match: majority predicted one outcome, opposite happened (played only)
+  let surpriseEntry = null
+  let surpriseGap = 0
+  playedMatches.forEach(m => {
+    const r = results[m.id]
+    const actualOutcome = r.h > r.a ? 'H' : r.a > r.h ? 'A' : 'D'
+    let homeV=0, awayV=0, drawV=0, total=0
+    Object.entries(allPreds).forEach(([_, preds]) => {
+      const p = preds[m.id]; if (!p || p.h == null) return
+      total++
+      if (p.h > p.a) homeV++; else if (p.a > p.h) awayV++; else drawV++
+    })
+    if (!total) return
+    const majorityOutcome = homeV >= awayV && homeV >= drawV ? 'H' : awayV >= drawV ? 'A' : 'D'
+    if (majorityOutcome !== actualOutcome) {
+      const majorityPct = Math.max(homeV, awayV, drawV) / total
+      if (majorityPct > surpriseGap) {
+        surpriseGap = majorityPct
+        const majorityTeam = majorityOutcome === 'H' ? m.home : majorityOutcome === 'A' ? m.away : 'Draw'
+        const actualTeam = actualOutcome === 'H' ? m.home : actualOutcome === 'A' ? m.away : 'Draw'
+        surpriseEntry = { match: m, majorityTeam, actualTeam, majorityPct: Math.round(majorityPct*100) }
+      }
+    }
+  })
+
+  // 5. Most contested: lowest max-score-share (least consensus, played only)
+  let contestEntry = null
+  let contestScore = 1
+  playedMatches.forEach(m => {
+    const scoreMap = {}; let total = 0
+    Object.entries(allPreds).forEach(([_, preds]) => {
+      const p = preds[m.id]; if (!p || p.h == null) return
+      const key = `${p.h}-${p.a}`
+      scoreMap[key] = (scoreMap[key] || 0) + 1; total++
+    })
+    if (total < 3) return
+    const maxShare = Math.max(...Object.values(scoreMap)) / total
+    if (maxShare < contestScore) {
+      contestScore = maxShare
+      const uniqueScores = Object.keys(scoreMap).length
+      contestEntry = { match: m, uniqueScores, total, maxSharePct: Math.round(maxShare*100) }
+    }
+  })
+
+  const items = [
+    braveEntry && {
+      icon: '🦁',
+      label: 'Most daring pick',
+      text: `${braveEntry.users.join(', ')} picked ${braveEntry.score} in ${braveEntry.match.home} vs ${braveEntry.match.away} — the only one${braveEntry.users.length > 1 ? 's' : ''} to go there.`
+    },
+    consensusEntry && {
+      icon: '🤝',
+      label: 'Most agreed-upon score',
+      text: `${consensusEntry.count} out of ${consensusEntry.total} players (${Math.round(consensusPct*100)}%) picked ${consensusEntry.score} in ${consensusEntry.match.home} vs ${consensusEntry.match.away}.`
+    },
+    topWinner && {
+      icon: '👑',
+      label: 'Most predicted winner',
+      text: `${flag(topWinner[0])} ${topWinner[0]} — ${topWinner[1]} predictions across all matches.`
+    },
+    surpriseEntry && {
+      icon: '😲',
+      label: 'Biggest upset',
+      text: `${surpriseEntry.majorityPct}% predicted ${surpriseEntry.majorityTeam} in ${surpriseEntry.match.home} vs ${surpriseEntry.match.away}. ${surpriseEntry.actualTeam} won instead.`
+    },
+    contestEntry && {
+      icon: '⚡',
+      label: 'Most contested match',
+      text: `${contestEntry.match.home} vs ${contestEntry.match.away} — ${contestEntry.uniqueScores} different scores across ${contestEntry.total} players. No consensus, the most popular pick had only ${contestEntry.maxSharePct}% of votes.`
+    },
+  ].filter(Boolean)
+
+  if (!items.length) return null
+
+  return (
+    <div className={s.trivia}>
+      <div className={s.triviaTitle}>So far…</div>
+      {items.map((item, i) => (
+        <div key={i} className={s.triviaItem}>
+          <span className={s.triviaIcon}>{item.icon}</span>
+          <div>
+            <span className={s.triviaLabel}>{item.label}: </span>
+            <span className={s.triviaText}>{item.text}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function Stats({ allPreds, results }) {
   const [view, setView] = useState('group')
   const [md, setMd] = useState(1)
@@ -150,6 +303,7 @@ export default function Stats({ allPreds, results }) {
         <p>Prediction breakdown for every match — outcomes, score distribution, who picked what.</p>
       </div>
 
+      <Trivia allPreds={allPreds} results={results} />
       <div className={s.seg}>
         <button className={view === 'group' ? s.active : ''} onClick={() => setView('group')}>Group Stage</button>
         <button className={view === 'ko' ? s.active : ''} onClick={() => setView('ko')}>Knockout</button>
