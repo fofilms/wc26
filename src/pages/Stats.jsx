@@ -269,20 +269,113 @@ function Trivia({ allPreds, results }) {
     },
   ].filter(Boolean)
 
-  if (!items.length) return null
+  // 6. Wildcard: most divergent from popular picks (played matches)
+  const wildcardScores = {}
+  playedMatches.forEach(m => {
+    const scoreMap = {}; let total = 0
+    Object.entries(allPreds).forEach(([_, preds]) => {
+      const p = preds[m.id]; if (!p||p.h==null) return
+      const k=`${p.h}-${p.a}`; scoreMap[k]=(scoreMap[k]||0)+1; total++
+    })
+    if (!total) return
+    const popular = Object.entries(scoreMap).sort((a,b)=>b[1]-a[1])[0][0]
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      const p = preds[m.id]; if (!p||p.h==null) return
+      const k=`${p.h}-${p.a}`
+      if (k !== popular) wildcardScores[username] = (wildcardScores[username]||0)+1
+    })
+  })
+  const wildcard = Object.entries(wildcardScores).sort((a,b)=>b[1]-a[1])[0]
+
+  // 7. Draw lovers: most draw predictions
+  const drawCounts = {}
+  allEntries.forEach(({username, pred}) => {
+    if (pred.h === pred.a) drawCounts[username] = (drawCounts[username]||0)+1
+  })
+  const drawLover = Object.entries(drawCounts).sort((a,b)=>b[1]-a[1])[0]
+
+  // 8. Score prophet: most exact scores (played matches)
+  const exactCounts = {}
+  playedMatches.forEach(m => {
+    const r = results[m.id]
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      const p = preds[m.id]; if (!p||p.h==null) return
+      if (p.h===r.h && p.a===r.a) exactCounts[username]=(exactCounts[username]||0)+1
+    })
+  })
+  const prophet = Object.entries(exactCounts).sort((a,b)=>b[1]-a[1])[0]
+
+  // 9. Sharpest: highest outcome accuracy (played matches)
+  const sharpRight = {}, sharpTotal = {}
+  playedMatches.forEach(m => {
+    const r = results[m.id]
+    const actualO = r.h>r.a?'H':r.a>r.h?'A':'D'
+    Object.entries(allPreds).forEach(([username, preds]) => {
+      const p = preds[m.id]; if (!p||p.h==null) return
+      const predO = p.h>p.a?'H':p.a>p.h?'A':'D'
+      sharpTotal[username]=(sharpTotal[username]||0)+1
+      if (predO===actualO) sharpRight[username]=(sharpRight[username]||0)+1
+    })
+  })
+  const sharpest = Object.entries(sharpRight)
+    .filter(([u]) => sharpTotal[u] >= 3)
+    .map(([u,r]) => [u, Math.round(r/sharpTotal[u]*100), r, sharpTotal[u]])
+    .sort((a,b)=>b[1]-a[1])[0]
+
+  // 10. Most defensive: 0-0 or 1-0 or 0-1 predictions
+  const defensiveCount = allEntries.filter(({pred}) =>
+    (pred.h+pred.a) <= 1
+  ).length
+
+  // 11. Closest to reality: avg predicted score vs actual
+  let closestMatch = null, closestDiff = Infinity
+  playedMatches.forEach(m => {
+    const r = results[m.id]
+    const preds = Object.values(allPreds).map(p=>p[m.id]).filter(p=>p?.h!=null)
+    if (!preds.length) return
+    const avgH = preds.reduce((s,p)=>s+p.h,0)/preds.length
+    const avgA = preds.reduce((s,p)=>s+p.a,0)/preds.length
+    const diff = Math.abs(avgH-r.h)+Math.abs(avgA-r.a)
+    if (diff < closestDiff) {
+      closestDiff = diff
+      closestMatch = { match: m, avgH: avgH.toFixed(1), avgA: avgA.toFixed(1), r }
+    }
+  })
+
+  // 12. Goal average: predicted vs actual
+  const predGoals = allEntries.filter(e=>playedMatches.find(m=>m.id===e.matchId))
+    .map(e=>e.pred.h+e.pred.a)
+  const avgPredGoals = predGoals.length ? (predGoals.reduce((a,b)=>a+b,0)/predGoals.length).toFixed(1) : null
+  const actualGoals = playedMatches.map(m=>results[m.id]).filter(r=>r?.h!=null).map(r=>r.h+r.a)
+  const avgActualGoals = actualGoals.length ? (actualGoals.reduce((a,b)=>a+b,0)/actualGoals.length).toFixed(1) : null
+
+  const newItems = [
+    wildcard && { icon:'🎲', label:'Wildcard', text:`${wildcard[0]} picked against the crowd the most — ${wildcard[1]} times choosing a different score than the majority.` },
+    drawLover && { icon:'🤝', label:'Draw lover', text:`${drawLover[0]} predicted the most draws — ${drawLover[1]} times.` },
+    prophet && { icon:'🤓', label:'Score prophet', text:`${prophet[0]} got the exact score right ${prophet[1]} time${prophet[1]>1?'s':''}.` },
+    sharpest && { icon:'🎯', label:'Sharpest player', text:`${sharpest[0]} correctly predicted the outcome in ${sharpest[2]} of ${sharpest[3]} played matches (${sharpest[1]}%).` },
+    { icon:'🔒', label:'Defensive predictions', text:`${defensiveCount} total predictions of 0-0, 1-0 or 0-1 across all matches.` },
+    closestMatch && { icon:'📊', label:'Closest to reality', text:`${closestMatch.match.home} vs ${closestMatch.match.away} — avg prediction was ${closestMatch.avgH}-${closestMatch.avgA}, actual was ${closestMatch.r.h}-${closestMatch.r.a}.` },
+    avgPredGoals && avgActualGoals && { icon:'📈', label:'Goal average', text:`Players predicted ${avgPredGoals} goals/match on average. Actual average: ${avgActualGoals} goals/match.` },
+  ].filter(Boolean)
+
+  const allItems = [...items, ...newItems]
+  if (!allItems.length) return null
 
   return (
     <div className={s.trivia}>
       <div className={s.triviaTitle}>So far…</div>
-      {items.map((item, i) => (
-        <div key={i} className={s.triviaItem}>
-          <span className={s.triviaIcon}>{item.icon}</span>
-          <div>
-            <span className={s.triviaLabel}>{item.label}: </span>
-            <span className={s.triviaText}>{item.text}</span>
+      <div className={s.triviaGrid}>
+        {allItems.map((item, i) => (
+          <div key={i} className={s.triviaItem}>
+            <span className={s.triviaIcon}>{item.icon}</span>
+            <div>
+              <span className={s.triviaLabel}>{item.label}: </span>
+              <span className={s.triviaText}>{item.text}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
