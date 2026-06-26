@@ -139,7 +139,7 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUs
           </div>
           <KoLockBar stage={ko} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
           <KoMatches stage={ko} mode={mode} results={results} myPreds={myPreds}
-            isAdmin={isAdmin} locks={locks} onSavePred={onSavePred} onSaveResult={onSaveResult} />
+            isAdmin={isAdmin} locks={locks} currentUser={currentUser} onSavePred={onSavePred} onSaveResult={onSaveResult} />
         </>
       )}
     </div>
@@ -176,7 +176,7 @@ function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUser
   ))
 }
 
-function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, onSavePred, onSaveResult }) {
+function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, currentUser, onSavePred, onSaveResult }) {
   const lockKey = `ko_${stage}`
   const locked = mode === 'predict' ? (locks?.[lockKey] ?? false) : false
   const ms = fixtures.knockout.filter(m => m.stage === stage)
