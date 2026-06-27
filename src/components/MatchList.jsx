@@ -82,6 +82,22 @@ function DeadlineBanner({ matchday, isAdmin, locks, onToggleLock }) {
   )
 }
 
+function KoPaymentNotice() {
+  return (
+    <div style={{
+      background: 'rgba(232,160,32,.08)',
+      border: '1px solid rgba(232,160,32,.25)',
+      borderRadius: 9, padding: '10px 13px', marginBottom: 10,
+      fontSize: 10.5, lineHeight: 1.6, color: 'var(--ink)',
+    }}>
+      <b style={{display:'block', marginBottom:4}}>To continue in the knockout stage, please send 100 MXN (5.50 USD / 5 EUR) to one of the following:</b>
+      <div>• PayPal: <b>xxx@xxx.com</b></div>
+      <div>• XXX</div>
+      <div>• XXX</div>
+    </div>
+  )
+}
+
 function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
   const lockKey = `ko_${stage}`
   const locked = locks?.[lockKey] ?? false
@@ -137,6 +153,7 @@ export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUs
               </button>
             ))}
           </div>
+          <KoPaymentNotice />
           <KoLockBar stage={ko} isAdmin={isAdmin} locks={locks} onToggleLock={onToggleLock} />
           <KoMatches stage={ko} mode={mode} results={results} myPreds={myPreds}
             isAdmin={isAdmin} locks={locks} currentUser={currentUser} onSavePred={onSavePred} onSaveResult={onSaveResult} />
