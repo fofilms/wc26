@@ -42,7 +42,7 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
 
     const counts = {}
     allPreds.forEach(r => {
-      if (r.match_id?.startsWith('G')) {
+      if (r.match_id && !r.match_id.startsWith('G')) {
         counts[r.username] = (counts[r.username] || 0) + 1
       }
     })
@@ -125,43 +125,7 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
                     </div>
                   )}
                   <div className={u.editActions}>
-                    <button className={u.saveBtn} onClick={save}>Save</button>
-                    {editing.newUsername && editing.newUsername !== editing.username && (
-                      <button className={u.renameBtn} onClick={rename}>Rename</button>
-                    )}
-                    <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
-                  </div>
-                </div>
-              ) : confirmDelete === usr.username ? (
-                <div className={u.editBlock}>
-                  <div className={u.confirmText}>Delete <b>{usr.username}</b>? This cannot be undone.</div>
-                  <div className={u.editActions}>
-                    <button className={u.deleteConfirmBtn} onClick={() => deleteUser(usr.username)}>Yes, delete</button>
-                    <button className={u.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className={u.userInfo}>
-                    <span className={u.uname}>{usr.username}</span>
-                    {isLocked && <span className={u.lockTag}>🔒 locked</span>}
-                    {(() => { const c = predCounts[usr.username] || 0; if (!c) return null; return <span className={c >= 24 ? u.countFull : u.count}>{c}/24</span> })()}
-                    {canSeePasswords && (
-                      <span className={u.upw}>{'•'.repeat(Math.min(usr.password.length, 8))}</span>
-                    )}
-                  </div>
-                  <div className={u.actions}>
-                    <button
-                      className={spectators[usr.username] ? u.spectatorOn : u.spectatorOff}
-                      onClick={() => handleToggleSpectator(usr.username)}
-                      title={spectators[usr.username] ? 'Remove spectator access' : 'Give spectator access'}
-                    >👁</button>
-                    <button
-                      className={isLocked ? u.unlockBtn : u.lockBtn2}
-                      onClick={() => onToggleUserLock(usr.username)}
-                    >
-                      {isLocked ? 'Unlock' : 'Lock'}
-                    </button>
+                    
                     <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
                       Edit
                     </button>
