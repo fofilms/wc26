@@ -259,13 +259,19 @@ export default function Certificate({ myPreds, results, leaderboard, allPreds, u
           0: { cellWidth: 82 }, 1: { cellWidth: 28, halign: 'center' },
           2: { cellWidth: 28, halign: 'center' }, 3: { cellWidth: 18, halign: 'center' },
         },
-        alternateRowStyles: { fillColor: [246, 249, 251] },
         didParseCell: (data) => {
-          if (data.section === 'body' && data.column.index === 3) {
-            const v = data.cell.raw
-            if (v === '+2') { data.cell.styles.textColor = GOOD; data.cell.styles.fontStyle = 'bold' }
-            else if (v === '+1') { data.cell.styles.textColor = WARN; data.cell.styles.fontStyle = 'bold' }
-            else if (v === '+0') data.cell.styles.textColor = BAD
+          if (data.section === 'body') {
+            const pts = data.row.raw[3]
+            if (pts === '+2') {
+              data.cell.styles.fillColor = [230, 248, 238]
+              if (data.column.index === 3) { data.cell.styles.textColor = GOOD; data.cell.styles.fontStyle = 'bold' }
+            } else if (pts === '+1') {
+              data.cell.styles.fillColor = [255, 248, 225]
+              if (data.column.index === 3) { data.cell.styles.textColor = WARN; data.cell.styles.fontStyle = 'bold' }
+            } else if (pts === '+0') {
+              data.cell.styles.fillColor = [255, 240, 240]
+              if (data.column.index === 3) data.cell.styles.textColor = BAD
+            }
           }
         },
       })
