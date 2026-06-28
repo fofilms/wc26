@@ -2,7 +2,7 @@ import s from './Header.module.css'
 
 const TABS = [
   { id: 'predict', label: 'Predictions' },
-  { id: 'standings', label: 'Standings' },
+  { id: 'standings', label: 'Group Standings' },
   { id: 'leaderboard', label: 'Leaderboard' },
   { id: 'after', label: 'After' },
   { id: 'stats', label: 'Stats' },
