@@ -88,7 +88,7 @@ export default function App() {
         {tab === 'certificate' && <Certificate myPreds={myPreds} results={results} leaderboard={leaderboard} allPreds={allPreds} user={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
-        Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time
+        Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time · Having trouble? <a href="https://wa.me/4917659550028" target="_blank" style="color:inherit;opacity:.7;text-decoration:underline">Contact admin on WhatsApp</a>
       </footer>
       <Toast message={toast} onDone={() => setToast(null)} />
     </>
