@@ -2,7 +2,7 @@ import s from './Header.module.css'
 
 const TABS = [
   { id: 'predict', label: 'Predictions' },
-  { id: 'standings', label: 'Group Standings' },
+  { id: 'standings', label: 'Group Standings', muted: true },
   { id: 'leaderboard', label: 'Leaderboard' },
   { id: 'after', label: 'After' },
   { id: 'stats', label: 'Stats' },
@@ -30,7 +30,7 @@ export default function Header({ user, isAdmin, activeTab, onTab, onLogout }) {
         {tabs.map(t => (
           <button
             key={t.id}
-            className={activeTab === t.id ? s.active : ''}
+            className={[activeTab === t.id ? s.active : '', t.muted ? s.muted : ''].filter(Boolean).join(' ')}
             onClick={() => onTab(t.id)}
           >
             {t.label}
