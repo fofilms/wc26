@@ -135,7 +135,6 @@ function MatchStats({ match: m, allPreds, results }) {
 }
 
 function Trivia({ allPreds, results, view }) {
-  const playedInView = view === "ko" ? fixtures.knockout.filter(m => results[m.id]?.h != null) : fixtures.groupMatches.filter(m => results[m.id]?.h != null)
   const allMatches = view === "ko" ? fixtures.knockout : fixtures.groupMatches
   const playedMatches = allMatches.filter(m => results[m.id]?.h != null)
 
@@ -392,6 +391,8 @@ export default function Stats({ allPreds, results }) {
   const [view, setView] = useState('ko')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
+
+  const playedInView = view === "ko" ? fixtures.knockout.filter(m => results[m.id]?.h != null) : fixtures.groupMatches.filter(m => results[m.id]?.h != null)
 
   const matches = view === 'group'
     ? fixtures.groupMatches.filter(m => m.matchday === md)
