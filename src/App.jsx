@@ -85,7 +85,7 @@ export default function App() {
         {tab === 'users'    && isAdmin && <Users currentUser={user} userLocks={userLocks} onToggleUserLock={toggleUserLock} onToggleSpectator={toggleSpectator} />}
         {tab === 'after' && <After results={results} allPreds={allPreds} currentUser={user} isSpectator={isSpectator} />}
         {tab === 'stats' && <Stats allPreds={allPreds} results={results} />}
-        {tab === 'certificate' && <Certificate myPreds={myPreds} results={results} leaderboard={leaderboard} user={user} />}
+        {tab === 'certificate' && <Certificate myPreds={myPreds} results={results} leaderboard={leaderboard} allPreds={allPreds} user={user} />}
       </div>
       <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
         Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time
