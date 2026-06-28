@@ -1,0 +1,25 @@
+.seg {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+  margin-bottom: 10px;
+}
+.seg button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: .12s;
+}
+.seg button.active {
+  background: var(--ink);
+  color: #fff;
+}
