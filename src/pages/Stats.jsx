@@ -388,7 +388,7 @@ function Trivia({ allPreds, results }) {
 }
 
 export default function Stats({ allPreds, results }) {
-  const [view, setView] = useState('group')
+  const [view, setView] = useState('ko')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
 

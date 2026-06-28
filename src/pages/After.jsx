@@ -9,7 +9,7 @@ const flag = (t) => fixtures.flags[t] || ''
 
 // Only show predictions for matches that have an official result
 export default function After({ results, allPreds, currentUser, isSpectator }) {
-  const [view, setView] = useState('group')
+  const [view, setView] = useState('ko')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
   const [selected, setSelected] = useState(null) // matchId
