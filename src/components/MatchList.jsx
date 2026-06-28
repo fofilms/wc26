@@ -15,6 +15,16 @@ const DEADLINES = {
   3: new Date('2026-06-24T18:00:00Z'),
 }
 
+// KO deadlines: 10 min before first match of each round (ET=UTC-4)
+const KO_DEADLINES = {
+  r32:   new Date('2026-06-28T18:50:00Z'),
+  r16:   new Date('2026-07-04T16:50:00Z'),
+  qf:    new Date('2026-07-09T20:50:00Z'),
+  sf:    new Date('2026-07-14T18:50:00Z'),
+  third: new Date('2026-07-18T18:50:00Z'),
+  final: new Date('2026-07-19T18:50:00Z'),
+}
+
 function useCountdown(deadline) {
   const [remaining, setRemaining] = useState(null)
   useEffect(() => {
@@ -84,14 +94,38 @@ function DeadlineBanner({ matchday, isAdmin, locks, onToggleLock }) {
 
 function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
   const lockKey = `ko_${stage}`
-  const locked = locks?.[lockKey] ?? false
-  if (!isAdmin && !locked) return null
+  const manualLocked = locks?.[lockKey] ?? false
+  const deadline = KO_DEADLINES[stage]
+  const remaining = useCountdown(deadline)
+  const deadlinePassed = remaining !== null && remaining <= 0
+  const hasExplicit = locks && lockKey in (locks || {})
+  const effectiveLocked = hasExplicit ? manualLocked : (deadlinePassed || manualLocked)
+
+  const fmt = (ms) => {
+    if (ms <= 0) return null
+    const s2 = Math.floor(ms / 1000)
+    const d = Math.floor(s2 / 86400), h = Math.floor((s2 % 86400) / 3600)
+    const m = Math.floor((s2 % 3600) / 60), sec = s2 % 60
+    return d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m ${sec}s`
+  }
+
+  if (!isAdmin && !effectiveLocked && !deadline) return null
+
   return (
-    <div className={`${s.deadlineBanner} ${locked ? s.deadlineLocked : ''}`}>
-      <span>{locked ? '🔒 Predictions locked' : '🔓 Predictions open'}</span>
+    <div className={`${s.deadlineBanner} ${effectiveLocked ? s.deadlineLocked : ''}`}>
+      <div className={s.deadlineLeft}>
+        {effectiveLocked ? (
+          <span>🔒 {deadlinePassed && !manualLocked ? 'Deadline passed — predictions closed' : 'Predictions locked'}</span>
+        ) : (
+          <>
+            <span>⏱ Closes in: {remaining !== null && fmt(remaining)}</span>
+            <span className={s.deadlineDate}>10 min before first kick-off</span>
+          </>
+        )}
+      </div>
       {isAdmin && (
         <button className={s.lockBtn} onClick={() => onToggleLock(lockKey)}>
-          {locked ? 'Unlock' : 'Lock'}
+          {effectiveLocked ? 'Unlock' : 'Lock'}
         </button>
       )}
     </div>
@@ -178,7 +212,11 @@ function GroupMatches({ matchday, mode, results, myPreds, isAdmin, locks, isUser
 
 function KoMatches({ stage, mode, results, myPreds, isAdmin, locks, currentUser, onSavePred, onSaveResult }) {
   const lockKey = `ko_${stage}`
-  const locked = mode === 'predict' ? (locks?.[lockKey] ?? false) : false
+  const manualLocked = locks?.[lockKey] ?? false
+  const koDeadline = KO_DEADLINES[stage]
+  const koDeadlinePassed = koDeadline ? Date.now() > koDeadline.getTime() : false
+  const hasExplicitKo = locks && lockKey in (locks || {})
+  const locked = mode === 'predict' ? (hasExplicitKo ? manualLocked : (koDeadlinePassed || manualLocked)) : false
   const ms = fixtures.knockout.filter(m => m.stage === stage)
   const byDay = {}
   ms.forEach(m => { if (!byDay[m.date]) byDay[m.date] = []; byDay[m.date].push(m) })
