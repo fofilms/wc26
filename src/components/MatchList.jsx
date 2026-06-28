@@ -99,7 +99,7 @@ function KoLockBar({ stage, isAdmin, locks, onToggleLock }) {
 }
 
 export default function MatchList({ mode, results, myPreds, isAdmin, locks, isUserLocked, currentUser, onSavePred, onSaveResult, onToggleLock }) {
-  const [view, setView] = useState('group')
+  const [view, setView] = useState('ko')
   const [md, setMd] = useState(1)
   const [ko, setKo] = useState('r32')
 
