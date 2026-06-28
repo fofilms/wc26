@@ -87,8 +87,9 @@ export default function App() {
         {tab === 'stats' && <Stats allPreds={allPreds} results={results} />}
         {tab === 'certificate' && <Certificate myPreds={myPreds} results={results} leaderboard={leaderboard} allPreds={allPreds} user={user} />}
       </div>
-      <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}><div style={{ marginBottom:4 }}><a href="https://wa.me/4917659550028" target="_blank" rel="noopener noreferrer" style={{ color:'#9a6a00', fontWeight:700, textDecoration:'none', fontSize:'10px' }}>Having trouble? Message the admin on WhatsApp</a></div>
-        Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time · Having trouble? <a href="https://wa.me/4917659550028" target="_blank" style="color:inherit;opacity:.7;text-decoration:underline">Contact admin on WhatsApp</a>
+      <footer style={{ textAlign:'center', color:'#7a8a99', fontSize:'9px', padding:'20px 0 8px', fontWeight:500 }}>
+        <div style={{ marginBottom:5 }}><a href='https://wa.me/4917659550028' target='_blank' rel='noopener noreferrer' style={{ color:'#9a6a00', fontWeight:700, textDecoration:'none', fontSize:'10px' }}>Having trouble? Message the admin on WhatsApp</a></div>
+        Predictions are private until the matches are over · Leaderboard is public · Match times are shown in local venue time
       </footer>
       <Toast message={toast} onDone={() => setToast(null)} />
     </>
