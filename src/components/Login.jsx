@@ -41,7 +41,7 @@ export default function Login({ onLogin }) {
         onLogin(name.trim())
       } else {
         setLoading(false)
-        setErr('Wrong password.')
+        setErr('Wrong password. If you cannot log in, please contact Mati.')
       }
     }
   }
