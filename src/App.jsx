@@ -1,4 +1,5 @@
 import fixtures from './data/fixtures.json'
+import OnlineUsers from './components/OnlineUsers'
 import { useState, useCallback, useRef, useEffect } from 'react'
 import Login from './components/Login'
 import Header from './components/Header'
@@ -25,7 +26,7 @@ export default function App() {
   const isAdmin = ADMINS.includes(user?.toLowerCase())
   const isUserLockedRef = useRef(false)
 
-  const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard } = useWC26(user)
+  const { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, onlineUsers, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard } = useWC26(user)
   isUserLockedRef.current = isUserLocked
 
   const handleSavePred = useCallback(async (matchId, ...rest) => {
@@ -74,6 +75,7 @@ export default function App() {
   return (
     <>
       <Header user={user} isAdmin={isAdmin} activeTab={tab} onTab={setTab} onLogout={handleLogout} />
+      <OnlineUsers users={onlineUsers} currentUser={user} />
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 14px 60px' }}>
         {tab === 'predict'     && <Predict {...pageProps} isUserLocked={isUserLocked} currentUser={user} />}
         {tab === 'standings'   && <Standings results={results} />}

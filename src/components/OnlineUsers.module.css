@@ -1,0 +1,36 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  color: var(--muted);
+  padding: 5px 0 2px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--good);
+  flex: none;
+  box-shadow: 0 0 0 2px rgba(26,158,92,.2);
+}
+
+.count {
+  font-weight: 700;
+  color: var(--good);
+}
+
+.names {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.me {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.name { color: var(--muted); }

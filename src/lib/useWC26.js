@@ -31,6 +31,7 @@ export function useWC26(user) {
   const [userLocks, setUserLocks]    = useState({}) // { username: true/false }
   const [isUserLocked, setIsUserLocked] = useState(false) // current user's own lock status
   const [isSpectator, setIsSpectator]     = useState(false) // can see all predictions
+  const [onlineUsers, setOnlineUsers]     = useState([])
   const channelRef = useRef(null)
 
   const parseResult = (row) => ({ h: row.home_score, a: row.away_score, adv: row.advance ?? undefined })
@@ -105,7 +106,9 @@ export function useWC26(user) {
     }
     init()
 
-    channelRef.current = sb.channel('wc26_live')
+    channelRef.current = sb.channel('wc26_live', {
+        config: { presence: { key: user } }
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wc26_results' }, async () => {
         const res = await loadResults()
         await loadLeaderboard(res)
@@ -113,7 +116,16 @@ export function useWC26(user) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wc26_locks' }, async () => {
         await loadLocks()
       })
-      .subscribe()
+      .on('presence', { event: 'sync' }, () => {
+        const state = channelRef.current.presenceState()
+        const users = Object.keys(state).filter(u => u && u !== 'undefined')
+        setOnlineUsers([...new Set(users)])
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channelRef.current.track({ online_at: new Date().toISOString() })
+        }
+      })
 
     return () => {
       cancelled = true
@@ -165,5 +177,5 @@ export function useWC26(user) {
     await loadLeaderboard(res)
   }, [loadResults, loadLeaderboard])
 
-  return { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard }
+  return { results, myPreds, leaderboard, allPreds, locks, userLocks, isUserLocked, isSpectator, onlineUsers, loading, savePred, saveResult, toggleLock, toggleUserLock, toggleSpectator, refreshLeaderboard }
 }
