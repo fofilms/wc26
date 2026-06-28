@@ -134,8 +134,8 @@ function MatchStats({ match: m, allPreds, results }) {
   )
 }
 
-function Trivia({ allPreds, results }) {
-  const allMatches = [...fixtures.groupMatches, ...fixtures.knockout]
+function Trivia({ allPreds, results, view }) {
+  const allMatches = view === "ko" ? fixtures.knockout : fixtures.groupMatches
   const playedMatches = allMatches.filter(m => results[m.id]?.h != null)
 
   // collect all predictions across all matches
@@ -403,7 +403,7 @@ export default function Stats({ allPreds, results }) {
         <p>Prediction breakdown for every match — outcomes, score distribution, who picked what.</p>
       </div>
 
-      <Trivia allPreds={allPreds} results={results} />
+      <Trivia allPreds={allPreds} results={results} view={view} />
       <div className={s.seg}>
         <button className={view === 'group' ? s.active : ''} onClick={() => setView('group')}>Group Stage</button>
         <button className={view === 'ko' ? s.active : ''} onClick={() => setView('ko')}>Knockout</button>
