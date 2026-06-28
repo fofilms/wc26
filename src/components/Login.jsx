@@ -15,9 +15,10 @@ export default function Login({ onLogin }) {
     if (trimmed.length < 2) { setErr('Enter at least 2 characters.'); return }
     if (/[:\/\\'"]/.test(trimmed)) { setErr('Name cannot contain : / \\ \' "'); return }
     setLoading(true); setErr('')
-    const { data } = await sb.from('wc26_users').select('username,password').eq('username', trimmed).single()
+    const { data } = await sb.from('wc26_users').select('username,password').ilike('username', trimmed).single()
     setLoading(false)
     if (data) {
+      setName(data.username) // use exact casing from DB
       setExistingUser(data)
       setStep('password')
     } else {
