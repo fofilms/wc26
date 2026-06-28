@@ -404,7 +404,7 @@ export default function Stats({ allPreds, results }) {
         <p>Prediction breakdown for every match — outcomes, score distribution, who picked what.</p>
       </div>
 
-      playedInView.length > 0 && <Trivia allPreds={allPreds} results={results} view={view} />
+      {playedInView.length > 0 && <Trivia allPreds={allPreds} results={results} view={view} />}
       <div className={s.seg}>
         <button className={view === 'group' ? s.active : ''} onClick={() => setView('group')}>Group Stage</button>
         <button className={view === 'ko' ? s.active : ''} onClick={() => setView('ko')}>Knockout</button>
