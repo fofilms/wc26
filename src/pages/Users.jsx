@@ -5,20 +5,17 @@ import u from './Users.module.css'
 
 const SUPERADMIN = 'cevik'
 
-
-
 export default function Users({ currentUser, userLocks, onToggleUserLock, onToggleSpectator }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [toast, setToast] = useState('')
+  const [predCounts, setPredCounts] = useState({})
+  const [spectators, setSpectators] = useState({})
 
   const canSeePasswords = currentUser?.toLowerCase() === SUPERADMIN
   const canDelete = currentUser?.toLowerCase() === SUPERADMIN
-
-  const [predCounts, setPredCounts] = useState({})
-  const [spectators, setSpectators] = useState({})
 
   const load = async () => {
     setLoading(true)
@@ -28,7 +25,6 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
     ;(usersRes.data || []).forEach(r => { specMap[r.username] = r.is_spectator ?? false })
     setSpectators(specMap)
 
-    // Paginate predictions query (Supabase caps at 1000 rows per request)
     const pageSize = 1000
     let from = 0
     let allPreds = []
@@ -39,7 +35,6 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
       if (data.length < pageSize) break
       from += pageSize
     }
-
     const counts = {}
     allPreds.forEach(r => {
       if (r.match_id && !r.match_id.startsWith('G')) {
@@ -94,14 +89,16 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
     <div>
       <div className={s.intro}>
         <h2>Users</h2>
-        <p>Manage players. Lock a user to prevent them from editing predictions.</p>
+        <p>Manage players and spectator access.</p>
       </div>
 
       {toast && <div className={u.toast}>{toast}</div>}
 
       <div className={u.list}>
         {users.map(usr => {
-          const isLocked = userLocks?.[usr.username] ?? false
+          const isSpectator = spectators[usr.username] ?? false
+          const koCount = predCounts[usr.username] || 0
+
           return (
             <div key={usr.username} className={u.row}>
               {editing?.username === usr.username ? (
@@ -125,7 +122,38 @@ export default function Users({ currentUser, userLocks, onToggleUserLock, onTogg
                     </div>
                   )}
                   <div className={u.editActions}>
-                    
+                    <button className={u.saveBtn} onClick={save}>Save</button>
+                    {editing.newUsername && editing.newUsername !== editing.username && (
+                      <button className={u.renameBtn} onClick={rename}>Rename</button>
+                    )}
+                    <button className={u.cancelBtn} onClick={() => setEditing(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : confirmDelete === usr.username ? (
+                <div className={u.editBlock}>
+                  <div className={u.confirmText}>Delete <b>{usr.username}</b>? This cannot be undone.</div>
+                  <div className={u.editActions}>
+                    <button className={u.deleteConfirmBtn} onClick={() => deleteUser(usr.username)}>Yes, delete</button>
+                    <button className={u.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className={u.userInfo}>
+                    <span className={u.uname}>{usr.username}</span>
+                    {koCount > 0 && (
+                      <span className={koCount >= 32 ? u.countFull : u.count}>{koCount}/32</span>
+                    )}
+                    {canSeePasswords && (
+                      <span className={u.upw}>{'•'.repeat(Math.min(usr.password?.length || 0, 8))}</span>
+                    )}
+                  </div>
+                  <div className={u.actions}>
+                    <button
+                      className={isSpectator ? u.spectatorOn : u.spectatorOff}
+                      onClick={() => handleToggleSpectator(usr.username)}
+                      title={isSpectator ? 'Remove spectator access' : 'Give spectator access'}
+                    >👁</button>
                     <button className={u.editBtn} onClick={() => setEditing({ username: usr.username, password: usr.password })}>
                       Edit
                     </button>
