@@ -89,7 +89,10 @@ export default function MatchRow({ match: m, mode, pred: initPred, result: initR
       <div className={s.row}>
         <div className={s.home}>
           <span className={s.flag}>{flag(m.home)}</span>
-          <span className={s.tname}>{m.home}</span>
+          <span className={s.tname}>
+            {m.home}
+            {m.home === 'Argentina' && <span style={{display:'block',fontSize:'8px',fontStyle:'italic',color:'var(--muted)',fontWeight:400,lineHeight:1.2}}>with the generous contribution of infantino</span>}
+          </span>
         </div>
 
         {!showReadonly ? (
